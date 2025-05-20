@@ -8,7 +8,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 85vh;
 }
 
 .container {
@@ -22,7 +22,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 3%;
+  gap: 5%;
   margin-bottom: 2.5%;
 }
 
@@ -124,38 +124,40 @@ button:focus {
 
   .dice-row {
     gap: 5%;
-    margin-bottom: 1%;
+    margin-bottom: 0;
   }
 
   .dice-block {
     max-width: 42%;
     min-width: 42%;
-    margin-bottom: 3%;
-  }
-
-  .dice-block h2 {
-    display: none;
+    margin-bottom: 0;
   }
 
   .dice {
     height: auto;
     margin-bottom: 1%;
-    max-height: 65%;
+    max-height: 51%;
     max-width: 90%;
+  }
+
+  .dice-block h2 {
+    margin-bottom: 0%;
+    font-size: 1rem;
+    color: #222;
   }
 
   .dice-label {
     font-size: 0.8rem;
     display: flex;
     flex-direction: column;
-    gap: 0px;
+    gap: 0;
     margin-top: 0;
     margin-bottom: 0;
   }
 
   button {
-    width: 100%;
-    padding: 14px;
+    width: 40%;
+    padding: 3%;
     font-size: 16px;
   }
 
