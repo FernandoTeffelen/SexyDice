@@ -10,39 +10,6 @@ const diceElements = [
   { dice: document.getElementById("dice6"), label: document.getElementById("label6"), min: 56, max: 66 },
 ];
 
-rollBtn.addEventListener("click", () => {
-  const resultados = [];
-
-  diceElements.forEach(({ dice, label, min, max }, index) => {
-    const x = 360 * (Math.floor(Math.random() * 4) + 1);
-    const y = 360 * (Math.floor(Math.random() * 4) + 1);
-    dice.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
-
-    setTimeout(() => {
-      const number = Math.floor(Math.random() * (max - min + 1)) + min;
-      dice.querySelector("img").src = `posições/${number}.png`;
-      resultados.push({ ordem: index + 1, numero: number });
-
-      if (resultados.length === 6) {
-        // Quando todos os dados terminarem, sortear nova ordem
-        const ordemAleatoria = shuffleArray([0, 1, 2, 3, 4, 5]);
-        ordemAleatoria.forEach((pos, i) => {
-          let destaque;
-          if (pos === 0) destaque = `<span class="primeiro">${ordinal(pos + 1)}</span>`;
-          else if (pos === 1) destaque = `<span class="segundo">${ordinal(pos + 1)}</span>`;
-          else if (pos === 2) destaque = `<span class="terceiro">${ordinal(pos + 1)}</span>`;
-          else destaque = ordinal(pos + 1);
-          const texto = `Sugestão de posição: ${destaque} opção`;
-          diceElements[i].label.innerHTML = texto;
-
-          label.innerHTML = `Dado ${i + 1}: ${destaque} escolhido`;
-
-        });
-      }
-    }, 1000);
-  });
-});
-
 // Embaralha um array
 function shuffleArray(array) {
   const copy = [...array];
@@ -65,3 +32,40 @@ function ordinal(n) {
   ];
   return ordinais[n - 1] || n;
 }
+
+rollBtn.addEventListener("click", () => {
+  const resultados = [];
+
+  diceElements.forEach(({ dice, min, max }, index) => {
+    const x = 360 * (Math.floor(Math.random() * 4) + 1);
+    const y = 360 * (Math.floor(Math.random() * 4) + 1);
+    dice.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+
+    setTimeout(() => {
+      const number = Math.floor(Math.random() * (max - min + 1)) + min;
+      dice.querySelector("img").src = `posições/${number}.png`;
+      resultados.push(index);
+
+      if (resultados.length === 6) {
+        const ordemAleatoria = shuffleArray([0, 1, 2, 3, 4, 5]);
+
+        ordemAleatoria.forEach((dadoIndex, posicao) => {
+          const label = diceElements[dadoIndex].label;
+          let destaque;
+
+          if (posicao === 0) {
+            destaque = `<span class="primeiro">${ordinal(posicao + 1)}</span>`;
+          } else if (posicao === 1) {
+            destaque = `<span class="segundo">${ordinal(posicao + 1)}</span>`;
+          } else if (posicao === 2) {
+            destaque = `<span class="terceiro">${ordinal(posicao + 1)}</span>`;
+          } else {
+            destaque = `<span class="sublinhado">${ordinal(posicao + 1)}</span>`;
+          }
+
+          label.innerHTML = `<span class="prefixo">Sugestão: </span>${destaque} colocada`;
+        });
+      }
+    }, 1000);
+  });
+});

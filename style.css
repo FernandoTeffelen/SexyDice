@@ -105,6 +105,13 @@ button:focus {
   font-size: 1.1em;
 }
 
+.prefixo {
+  display: inline;
+}
+
+.sublinhado {
+  text-decoration: underline;
+}
 
 
 /* MEDIA QUERY para iPhone 11 */
@@ -131,5 +138,9 @@ button:focus {
     width: 100%;
     padding: 14px;
     font-size: 16px;
+  }
+
+  .prefixo {
+    display: none;
   }
 }
