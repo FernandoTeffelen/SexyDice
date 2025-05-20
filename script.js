@@ -11,17 +11,57 @@ const diceElements = [
 ];
 
 rollBtn.addEventListener("click", () => {
-  diceElements.forEach(({ dice, label, min, max }) => {
-    // Gira aleatoriamente
+  const resultados = [];
+
+  diceElements.forEach(({ dice, label, min, max }, index) => {
     const x = 360 * (Math.floor(Math.random() * 4) + 1);
     const y = 360 * (Math.floor(Math.random() * 4) + 1);
     dice.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
 
-    // Escolhe imagem aleatória no intervalo do dado
     setTimeout(() => {
       const number = Math.floor(Math.random() * (max - min + 1)) + min;
       dice.querySelector("img").src = `posições/${number}.png`;
-      label.textContent = `Imagem "${number}"`;
+      resultados.push({ ordem: index + 1, numero: number });
+
+      if (resultados.length === 6) {
+        // Quando todos os dados terminarem, sortear nova ordem
+        const ordemAleatoria = shuffleArray([0, 1, 2, 3, 4, 5]);
+        ordemAleatoria.forEach((pos, i) => {
+          let destaque;
+          if (pos === 0) destaque = `<span class="primeiro">${ordinal(pos + 1)}</span>`;
+          else if (pos === 1) destaque = `<span class="segundo">${ordinal(pos + 1)}</span>`;
+          else if (pos === 2) destaque = `<span class="terceiro">${ordinal(pos + 1)}</span>`;
+          else destaque = ordinal(pos + 1);
+          const texto = `Sugestão de posição: ${destaque} opção`;
+          diceElements[i].label.innerHTML = texto;
+
+          label.innerHTML = `Dado ${i + 1}: ${destaque} escolhido`;
+
+        });
+      }
     }, 1000);
   });
 });
+
+// Embaralha um array
+function shuffleArray(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+// Converte número para ordinal em português
+function ordinal(n) {
+  const ordinais = [
+    "Primeira",
+    "Segunda",
+    "Terceira",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+  ];
+  return ordinais[n - 1] || n;
+}
