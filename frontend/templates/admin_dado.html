@@ -1,0 +1,64 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Jogo (Admin){% endblock %}
+
+{% block page_header %}
+    <h2 class="h3 mb-0">Visualização do Jogo</h2>
+{% endblock %}
+
+{% block admin_content %}
+    <div class="container">
+        <div class="dice-selector-container mb-4">
+            <label for="diceCountSelector" class="form-label">Quantos dados deseja girar?</label>
+            <select class="form-select" id="diceCountSelector">
+                <option value="1">1 Dado</option>
+                <option value="2">2 Dados</option>
+                <option value="3">3 Dados</option>
+                <option value="6" selected>6 Dados</option>
+            </select>
+        </div>
+
+        <div class="dice-row" id="diceRow">
+            <div class="dice-block" data-dice-id="1">
+                <h2 class="dice-title">Dado 1</h2>
+                <div class="dice" id="dice1"><img src="{{ url_for('static', filename='posições/1.png') }}" alt="Dado 1"/></div>
+                <p class="dice-label" id="label1"></p>
+            </div>
+            <div class="dice-block" data-dice-id="2">
+                <h2 class="dice-title">Dado 2</h2>
+                <div class="dice" id="dice2"><img src="{{ url_for('static', filename='posições/12.png') }}" alt="Dado 2"/></div>
+                <p class="dice-label" id="label2"></p>
+            </div>
+            <div class="dice-block" data-dice-id="3">
+                <h2 class="dice-title">Dado 3</h2>
+                <div class="dice" id="dice3"><img src="{{ url_for('static', filename='posições/23.png') }}" alt="Dado 3"/></div>
+                <p class="dice-label" id="label3"></p>
+            </div>
+            <div class="dice-block" data-dice-id="4">
+                <h2 class="dice-title">Dado 4</h2>
+                <div class="dice" id="dice4"><img src="{{ url_for('static', filename='posições/34.png') }}" alt="Dado 4"/></div>
+                <p class="dice-label" id="label4"></p>
+            </div>
+            <div class="dice-block" data-dice-id="5">
+                <h2 class="dice-title">Dado 5</h2>
+                <div class="dice" id="dice5"><img src="{{ url_for('static', filename='posições/45.png') }}" alt="Dado 5"/></div>
+                <p class="dice-label" id="label5"></p>
+            </div>
+            <div class="dice-block" data-dice-id="6">
+                <h2 class="dice-title">Dado 6</h2>
+                <div class="dice" id="dice6"><img src="{{ url_for('static', filename='posições/56.png') }}" alt="Dado 6"/></div>
+                <p class="dice-label" id="label6"></p>
+            </div>
+        </div>
+
+        <button id="rollBtn" class="btn btn-success btn-lg"><i class="bi bi-shuffle"></i> Girar os Dados (Teste)</button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        const STATIC_FILES_PATH = "{{ url_for('static', filename='') }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

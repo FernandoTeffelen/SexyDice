@@ -12,14 +12,14 @@
     <div class="form-container">
         <a href="{{ url_for('main_bp.index') }}" class="back-link"><i class="bi bi-arrow-left-circle"></i> Voltar</a>
         <h2>Login</h2>
-        <form>
+        <form id="loginForm">
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                <input type="email" class="form-control" placeholder="Seu e-mail" required>
+                <input type="email" class="form-control" id="email" placeholder="Seu e-mail" required>
             </div>
             <div class="input-group mb-4">
                 <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                <input type="password" class="form-control" placeholder="Sua senha" required>
+                <input type="password" class="form-control" id="password" placeholder="Sua senha" required>
             </div>
             <button type="submit" class="btn btn-primary w-100">Entrar</button>
         </form>
@@ -27,5 +27,6 @@
             Não tem uma conta? <a href="{{ url_for('main_bp.cadastro_page') }}">Cadastre-se</a>
         </p>
     </div>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>
 </html>

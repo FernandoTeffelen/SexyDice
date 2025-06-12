@@ -12,18 +12,18 @@
     <div class="form-container">
         <a href="{{ url_for('main_bp.index') }}" class="back-link"><i class="bi bi-arrow-left-circle"></i> Voltar</a>
         <h2>Crie sua Conta</h2>
-        <form>
+        <form id="registerForm">
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                <input type="text" class="form-control" placeholder="Seu nome" required>
+                <input type="text" class="form-control" id="name" placeholder="Seu nome" required>
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                <input type="email" class="form-control" placeholder="Seu e-mail" required>
+                <input type="email" class="form-control" id="email" placeholder="Seu e-mail" required>
             </div>
             <div class="input-group mb-4">
                 <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                <input type="password" class="form-control" placeholder="Crie uma senha" required>
+                <input type="password" class="form-control" id="password" placeholder="Crie uma senha" required>
             </div>
             <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
         </form>
@@ -31,5 +31,6 @@
             Já tem uma conta? <a href="{{ url_for('main_bp.login_page') }}">Faça o login</a>
         </p>
     </div>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>
 </html>
