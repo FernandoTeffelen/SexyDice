@@ -5,16 +5,12 @@
 
 body {
     margin: 0;
-    padding: 2rem 1rem;
+    /* padding: 2rem 1rem; <-- REMOVA OU ALTERE ESTA LINHA */
+    padding: 0; /* Garante que o menu encoste no topo */
     background: #f0f0f0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-direction: column;
-    min-height: 100vh;
-    box-sizing: border-box;
+    /* As propriedades de flexbox no body não são mais necessárias aqui */
 }
 
 
@@ -23,8 +19,16 @@ body {
 /* =================================================================== */
 /* Estilos específicos para a página 'index.html' */
 
+.main-content {
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .home-container {
     text-align: center;
+    width: 100%;
     max-width: 800px;
 }
 
@@ -242,6 +246,20 @@ button:hover, button:focus {
     left: 1rem;
 }
 
+.page-container {
+    width: 100%;
+    max-width: 1200px; /* ou a largura que preferir */
+    margin: 0 auto;
+}
+
+.back-link-standalone {
+    font-size: 1.1rem;
+    color: #555;
+    text-decoration: none;
+}
+.back-link-standalone:hover {
+    color: #000;
+}
 
 /* =================================================================== */
 /* 6. MEDIA QUERY (ESTILOS PARA CELULAR)                               */

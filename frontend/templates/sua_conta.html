@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Sua Conta{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Minha Conta</h2>
+    {% if current_user %}
+        <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" class="form-control" value="{{ current_user.name }}" disabled>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">E-mail</label>
+            <input type="email" class="form-control" value="{{ current_user.email }}" disabled>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Status da Assinatura</label>
+            <input type="text" class="form-control" 
+                   value="{{ 'Ativa' if current_user.subscription and current_user.subscription.status == 'active' else 'Inativa' }}" 
+                   disabled>
+        </div>
+        <p class="text-center mt-4"><a href="{{ url_for('main_bp.compra_page') }}">Gerenciar Assinatura</a></p>
+    {% endif %}
+</div>
+{% endblock %}

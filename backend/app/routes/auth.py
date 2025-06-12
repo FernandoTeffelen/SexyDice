@@ -1,36 +1,22 @@
-# backend/app/routes/auth.py
-from flask import Blueprint, request, jsonify, current_app
-from app import db, bcrypt
-from app.models import User, Subscription
+from flask import Blueprint, request, jsonify, session, current_app
+from app import db
+from app.models import User
 
 auth_bp = Blueprint('auth_bp', __name__)
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
-    # ... (o código de registro continua o mesmo de antes)
+    # O código de registro continua o mesmo, não precisa mudar
     data = request.get_json()
     if not data or not data.get('email') or not data.get('password'):
         return jsonify({"message": "Dados ausentes."}), 400
-
-    name = data.get('name')
-    email = data.get('email')
-    password = data.get('password')
-
-    if User.query.filter_by(email=email).first():
+    if User.query.filter_by(email=data.get('email')).first():
         return jsonify({"message": "Este e-mail já está em uso."}), 409
-
-    new_user = User(name=name, email=email)
-    new_user.set_password(password)
-    new_subscription = Subscription(user=new_user, status='inactive')
-
-    try:
-        db.session.add(new_user)
-        db.session.add(new_subscription)
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"message": f"Erro ao registrar no banco de dados: {e}"}), 500
-
+    
+    new_user = User(name=data.get('name'), email=data.get('email'))
+    new_user.set_password(data.get('password'))
+    db.session.add(new_user)
+    db.session.commit()
     return jsonify({"message": "Usuário registrado com sucesso! Faça o login."}), 201
 
 
@@ -40,28 +26,29 @@ def login():
     email = data.get('email')
     password = data.get('password')
 
-    # --- LÓGICA DE LOGIN ATUALIZADA ---
-
-    # 1. Verifica se as credenciais são de ADMIN
+    # 1. Verifica se é o admin
     admin_email = current_app.config['ADMIN_EMAIL']
     admin_password = current_app.config['ADMIN_PASSWORD']
 
     if email == admin_email and password == admin_password:
-        return jsonify({
-            "message": "Login de administrador bem-sucedido!",
-            "token": "um-token-jwt-falso-para-ADMIN",
-            "role": "admin"  # Informa ao frontend que é um admin
-        }), 200
+        session.clear() # Limpa qualquer sessão antiga
+        session['user_id'] = 'admin'
+        session['role'] = 'admin'
+        session['name'] = 'Admin'
+        return jsonify({"message": "Login de admin bem-sucedido!", "role": "admin"}), 200
 
-    # 2. Se não for admin, procura por um usuário comum no banco de dados
+    # 2. Se não for admin, verifica um usuário comum
     user = User.query.filter_by(email=email).first()
+    if user and user.check_password(password):
+        session.clear()
+        session['user_id'] = user.id
+        session['role'] = 'user'
+        session['name'] = user.name
+        return jsonify({"message": "Login bem-sucedido!", "role": "user"}), 200
+    
+    return jsonify({"message": "E-mail ou senha inválidos."}), 401
 
-    if not user or not user.check_password(password):
-        return jsonify({"message": "E-mail ou senha inválidos."}), 401
-
-    # 3. Se for um usuário comum, retorna o sucesso com a role de user
-    return jsonify({
-        "message": "Login bem-sucedido!",
-        "token": "um-token-jwt-falso-para-USER",
-        "role": "user" # Informa ao frontend que é um usuário comum
-    }), 200
+@auth_bp.route('/logout', methods=['POST'])
+def logout():
+    session.clear() # Limpa todos os dados da sessão
+    return jsonify({"message": "Logout bem-sucedido."}), 200
