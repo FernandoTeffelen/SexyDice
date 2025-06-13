@@ -51,45 +51,52 @@ def mercado_pago_webhook():
     data = request.get_json()
     print(f"Dados recebidos do webhook: {data}")
 
+    # A notificação pode ser de vários tipos, mas só nos importamos com pagamentos
     if data and data.get('type') == 'payment':
         payment_id = data['data']['id']
-        action = data.get('action')
+        print(f"Webhook recebido para o pagamento ID: {payment_id}")
 
-        if action == 'payment.created':
-            print(f"Webhook 'payment.created' recebido. Nenhuma ação de aprovação tomada.")
-            return jsonify(success=True), 200
+        # --- LÓGICA DE PRODUÇÃO ---
+        # 1. Buscamos os detalhes REAIS do pagamento na API do Mercado Pago
+        payment_service = PaymentService()
+        payment_info = payment_service.get_payment_details(payment_id)
 
-        print(f"Webhook '{action}' recebido para o pagamento ID: {payment_id}. Processando aprovação...")
-        local_payment = Payment.query.filter_by(mercado_pago_id=payment_id).first()
+        # 2. Verificamos se o pagamento foi realmente aprovado
+        if payment_info and payment_info.get("status") == "approved":
+            print(f"Pagamento {payment_id} foi APROVADO no Mercado Pago!")
+            
+            # 3. Encontramos o pagamento correspondente no nosso banco de dados
+            local_payment = Payment.query.filter_by(mercado_pago_id=payment_id).first()
+            if not local_payment:
+                print(f"ALERTA: Pagamento aprovado {payment_id} não encontrado no nosso banco de dados.")
+                return jsonify(success=False), 404
 
-        if not local_payment:
-            print(f"Pagamento local com ID {payment_id} não encontrado.")
-            return jsonify(success=False, message="Pagamento local não encontrado"), 404
-        
-        user = User.query.get(local_payment.user_id)
-        if not user:
-            print(f"Usuário com ID {local_payment.user_id} não encontrado.")
-            return jsonify(success=False, message="Usuário não encontrado"), 404
+            # Se o pagamento já foi processado, não fazemos nada
+            if local_payment.status == 'approved':
+                print(f"Pagamento {payment_id} já foi processado anteriormente. Nenhuma ação tomada.")
+                return jsonify(success=True), 200
 
-        subscription = user.subscription
-        if not subscription:
-            subscription = Subscription(user_id=user.id)
-            db.session.add(subscription)
+            # 4. Encontramos o usuário e atualizamos sua assinatura
+            user = User.query.get(local_payment.user_id)
+            if user:
+                subscription = user.subscription
+                if not subscription:
+                    subscription = Subscription(user_id=user.id)
+                    db.session.add(subscription)
 
-        # --- MUDANÇA PRINCIPAL AQUI ---
-        # Usamos datetime.now(timezone.utc) para garantir que a data seja salva com fuso horário
-        subscription.status = 'active'
-        subscription.plan_type = local_payment.plan_type
-        subscription.expires_at = datetime.now(timezone.utc) + timedelta(days=local_payment.duration_days)
-        local_payment.status = 'approved'
-        
-        try:
-            db.session.commit()
-            print(f"SUCESSO: Assinatura do usuário {user.email} atualizada para o plano '{local_payment.plan_type}'.")
-        except Exception as e:
-            db.session.rollback()
-            print(f"ERRO: Falha ao salvar no banco: {e}")
-
+                subscription.status = 'active'
+                subscription.plan_type = local_payment.plan_type
+                subscription.expires_at = datetime.utcnow() + timedelta(days=local_payment.duration_days)
+                local_payment.status = 'approved'
+                
+                try:
+                    db.session.commit()
+                    print(f"SUCESSO: Assinatura do usuário {user.email} atualizada para o plano '{local_payment.plan_type}'.")
+                except Exception as e:
+                    db.session.rollback()
+                    print(f"ERRO: Falha ao salvar no banco: {e}")
+    
+    # Sempre retornamos 200 OK para o Mercado Pago saber que recebemos a notificação
     return jsonify(success=True), 200
 
 @payment_bp.route('/status/<int:mercado_pago_id>', methods=['GET'])
