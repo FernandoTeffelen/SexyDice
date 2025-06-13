@@ -1,30 +1,27 @@
 {% extends 'base.html' %}
-
 {% block title %}Home{% endblock %}
-
 {% block content %}
 <div class="home-container">
-    <h1 class="home-title">Bem-vindo ao SexyDice</h1>
-    <p class="home-subtitle">Apimente sua relação com um jogo divertido e ousado.</p>
-
-    <div class="video-container" id="videoWrapper">
-        <video id="promoVideo" src="{{ url_for('static', filename='videos/video-posicoes.mp4') }}" muted autoplay playsinline></video>
-        <div class="replay-icon" id="replayIcon" style="display: none;">
-            <i class="bi bi-arrow-clockwise"></i>
+    <main>
+        <h1 class="home-title">Bem-vindo ao SexyDice</h1>
+        <p class="home-subtitle">Apimente sua relação com um jogo divertido e ousado.</p>
+        <div class="video-container" id="videoWrapper">
+            <video id="promoVideo" src="{{ url_for('static', filename='videos/video-posicoes.mp4') }}" muted autoplay playsinline></video>
+            <div class="replay-icon" id="replayIcon" style="display: none;">
+                <i class="bi bi-arrow-clockwise"></i>
+            </div>
         </div>
-    </div>
-
-    <div class="home-buttons">
-        <a href="{{ url_for('main_bp.compra_page') }}" class="btn btn-primary btn-lg">
-            <i class="bi bi-cart-check"></i> Comprar Dado
-        </a>
-    </div>
+        <div class="home-buttons">
+            {% if not current_user or (current_user.role == 'user' and (not current_user.subscription or current_user.subscription.status != 'active')) %}
+                <a href="{{ url_for('main_bp.compra_page') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-cart-check"></i> Comprar Acesso
+                </a>
+            {% endif %}
+        </div>
+        </main>
 </div>
 {% endblock %}
-
 {% block scripts %}
     {{ super() }}
     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-    {% if current_user %}
-    {% endif %}
 {% endblock %}

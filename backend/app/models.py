@@ -45,4 +45,6 @@ class Payment(db.Model):
     mercado_pago_id = db.Column(db.BigInteger, unique=True, nullable=False)
     amount = db.Column(db.Numeric(10, 2), nullable=False)
     status = db.Column(db.String(50), nullable=False)
+    plan_type = db.Column(db.String(50), nullable=True)
+    duration_days = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())

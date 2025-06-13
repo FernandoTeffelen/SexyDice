@@ -261,6 +261,10 @@ button:hover, button:focus {
     color: #000;
 }
 
+.plan-option .form-check-input {
+    display: none;
+}
+
 /* =================================================================== */
 /* 6. MEDIA QUERY (ESTILOS PARA CELULAR)                               */
 /* =================================================================== */

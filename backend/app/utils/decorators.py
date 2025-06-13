@@ -1,28 +1,39 @@
 from functools import wraps
-from flask import session, redirect, url_for, abort
+from flask import session, redirect, url_for, abort, g
+from datetime import datetime, timezone
 
 def login_required(f):
-    """
-    Decorator que verifica se um usuário está logado.
-    Se não estiver, redireciona para a página de login.
-    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
+        if not g.user:
             return redirect(url_for('main_bp.login_page'))
         return f(*args, **kwargs)
     return decorated_function
 
 def admin_required(f):
-    """
-    Decorator que verifica se o usuário logado é um admin.
-    Se não for, aborta a requisição com um erro 403 (Proibido).
-    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
+        if not g.user or g.user.id != 'admin':
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
+
+def subscription_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not g.user:
             return redirect(url_for('main_bp.login_page'))
-        if session.get('role') != 'admin':
-            abort(403) # Erro de acesso proibido
+        
+        if g.user.id == 'admin':
+            return f(*args, **kwargs)
+        
+        subscription = g.user.subscription
+        
+        is_active = subscription and subscription.status == 'active' and \
+                    (subscription.expires_at is None or subscription.expires_at > datetime.now(timezone.utc))
+
+        if not is_active:
+            return redirect(url_for('main_bp.compra_page'))
+        
         return f(*args, **kwargs)
     return decorated_function

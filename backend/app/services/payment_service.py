@@ -1,59 +1,66 @@
 # backend/app/services/payment_service.py
 import mercadopago
 import os
-from app import db # Importe 'db'
-from app.models import Payment # Importe o modelo Payment
+from app import db
+from app.models import Payment
 
 class PaymentService:
     """Gerencia as interações com o serviço de pagamento (Mercado Pago)."""
     
     def __init__(self):
-        access_token = os.environ.get('MERCADO_PAGO_ACCESS_TOKEN') #
-        if not access_token: #
-            raise ValueError("A chave de acesso do Mercado Pago não foi configurada.") #
-        self.sdk = mercadopago.SDK(access_token) #
+        access_token = os.environ.get('MERCADO_PAGO_ACCESS_TOKEN')
+        if not access_token:
+            raise ValueError("A chave de acesso do Mercado Pago não foi configurada.")
+        self.sdk = mercadopago.SDK(access_token)
 
-    def create_pix_payment(self, amount, description, payer_email, user_id): # <--- ADICIONE user_id
-        """Cria uma cobrança PIX e retorna os dados para o frontend."""
+    def create_pix_payment(self, amount, description, payer_email, user_id, plan_type, duration_days):
+        """Cria uma cobrança PIX, salva no DB e retorna os dados para o frontend."""
         payment_data = {
-            "transaction_amount": float(amount), #
-            "description": description, #
-            "payment_method_id": "pix", #
-            "payer": { #
-                "email": payer_email, #
+            "transaction_amount": float(amount),
+            "description": description,
+            "payment_method_id": "pix",
+            "payer": {
+                "email": payer_email,
             },
-            "external_reference": str(user_id) # Adicione uma referência externa para vincular ao seu usuário
+            "external_reference": str(user_id) # Vincula o pagamento ao nosso user_id
         }
         try:
-            payment_response = self.sdk.payment().create(payment_data) #
-            payment = payment_response.get("response") #
+            payment_response = self.sdk.payment().create(payment_data)
+            payment = payment_response.get("response")
 
-            if payment and payment.get("status") == "pending": #
-                qr_code_base64 = payment["point_of_interaction"]["transaction_data"]["qr_code_base64"] #
-                qr_code_text = payment["point_of_interaction"]["transaction_data"]["qr_code"] #
+            if payment and payment.get("status") == "pending":
+                qr_code_base64 = payment["point_of_interaction"]["transaction_data"]["qr_code_base64"]
+                qr_code_text = payment["point_of_interaction"]["transaction_data"]["qr_code"]
                 
-                # SALVE O PAGAMENTO NO SEU BANCO DE DADOS AQUI
+                # Salva o pagamento pendente no nosso banco de dados
                 if user_id:
                     new_payment_record = Payment(
                         user_id=user_id,
                         mercado_pago_id=payment.get("id"),
                         amount=amount,
-                        status=payment.get("status")
+                        status=payment.get("status"),
+                        plan_type=plan_type,
+                        duration_days=duration_days
                     )
                     db.session.add(new_payment_record)
                     db.session.commit()
                     print(f"Pagamento PIX {payment.get('id')} registrado no DB para user {user_id}")
 
-                return {"success": True, "qr_code_base64": qr_code_base64, "qr_code_text": qr_code_text} #
+                return {
+                    "success": True, 
+                    "qr_code_base64": qr_code_base64, 
+                    "qr_code_text": qr_code_text,
+                    "mercado_pago_id": payment.get("id")
+                }
             else:
-                print(f"Erro na criação do PIX, resposta do Mercado Pago: {payment_response}") # Imprima a resposta completa para depuração
-                return {"success": False, "error": payment.get("message", "Erro desconhecido na API do Mercado Pago")} #
+                print(f"Erro na criação do PIX, resposta do Mercado Pago: {payment_response}")
+                return {"success": False, "error": payment.get("message", "Erro desconhecido na API do Mercado Pago")}
 
         except Exception as e:
             print(f"Exceção ao criar pagamento PIX: {e}")
             import traceback
-            traceback.print_exc() # Imprime o stack trace completo
-            return {"success": False, "error": f"Erro interno ao processar pagamento: {str(e)}"} #
+            traceback.print_exc()
+            return {"success": False, "error": f"Erro interno ao processar pagamento: {str(e)}"}
 
     def get_payment_details(self, payment_id):
         """Busca os detalhes de um pagamento no Mercado Pago."""

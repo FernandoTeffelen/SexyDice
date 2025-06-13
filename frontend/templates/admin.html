@@ -56,8 +56,20 @@
                                 <span class="badge bg-danger">Desativado</span>
                             {% endif %}
                         </td>
-                        <td>-</td>
-                        <td>-</td>
+                        <td>
+                            {% if user.subscription and user.subscription.expires_at %}
+                                {{ user.subscription.expires_at.strftime('%d/%m/%Y %H:%M') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.subscription and user.subscription.plan_type %}
+                                {{ user.subscription.plan_type|capitalize }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                     </tr>
                     {% else %}
                     <tr>
