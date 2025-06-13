@@ -1,4 +1,6 @@
 Flask
 python-dotenv
 Flask-Bcrypt
+Flask-SQLAlchemy
 mercadopago
+gunicorn
