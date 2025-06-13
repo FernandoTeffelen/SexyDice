@@ -1,30 +1,33 @@
 from flask import Blueprint, render_template, session, g, redirect, url_for
-from app.models import User
+from app.models import User, Subscription, Payment
 from app.utils.decorators import login_required, admin_required, subscription_required
-from datetime import datetime, timezone
-from types import SimpleNamespace
+from datetime import datetime, timezone, timedelta
+from sqlalchemy import func
+from app import db
 
 main_bp = Blueprint('main_bp', __name__)
+
+@main_bp.app_template_filter('localtime')
+def localtime_filter(utc_dt):
+    """Filtro Jinja para converter um datetime UTC para o fuso local (UTC-3)."""
+    if not utc_dt:
+        return "-"
+    local_tz = timezone(timedelta(hours=-3))
+    return utc_dt.replace(tzinfo=timezone.utc).astimezone(local_tz)
 
 @main_bp.before_app_request
 def load_logged_in_user():
     """
-    Carrega o usuário logado antes de cada requisição.
-    Esta função garante que 'g.user' sempre exista e tenha uma estrutura consistente.
+    Carrega o usuário logado antes de CADA requisição.
+    A mudança principal está aqui: garantimos que todo g.user tenha o atributo .role.
     """
     user_id = session.get('user_id')
     g.user = None
     if user_id:
         if user_id == 'admin':
-            # Cria um objeto "mock" para o admin que imita um usuário real
-            g.user = SimpleNamespace(
-                id='admin', 
-                name='Admin', 
-                role='admin', 
-                email=session.get('email'),
-                # Damos ao admin uma "assinatura" sempre ativa para que ele passe nas verificações
-                subscription=SimpleNamespace(status='active', expires_at=None)
-            )
+            # Para o admin, criamos um objeto com a role definida
+            from types import SimpleNamespace
+            g.user = SimpleNamespace(id='admin', name='Admin', role='admin', subscription=SimpleNamespace(status='active'))
         else:
             # Para o usuário comum, buscamos no DB e adicionamos o atributo role
             user = User.query.get(user_id)
@@ -34,10 +37,8 @@ def load_logged_in_user():
 
 @main_bp.app_context_processor
 def inject_user():
-    """Torna g.user disponível para os templates HTML como 'current_user'."""
+    """Torna o usuário disponível para todos os templates como 'current_user'."""
     return dict(current_user=g.get('user'))
-
-# --- ROTAS ---
 
 @main_bp.route('/')
 def index():
@@ -54,10 +55,17 @@ def cadastro_page():
 @main_bp.route('/compra')
 @login_required
 def compra_page():
-    # Se o usuário já tem uma assinatura ativa, redireciona para a página do dado
     if g.user and g.user.subscription and g.user.subscription.status == 'active':
-        if g.user.role == 'admin' or g.user.subscription.expires_at is None or g.user.subscription.expires_at > datetime.now(timezone.utc):
+        
+        # --- MUDANÇA PRINCIPAL AQUI ---
+        # Usando datetime.now(timezone.utc) para a comparação correta
+        is_active_and_not_expired = (g.user.id == 'admin' or 
+                                     g.user.subscription.expires_at is None or 
+                                     g.user.subscription.expires_at > datetime.now(timezone.utc))
+
+        if is_active_and_not_expired:
             return redirect(url_for('main_bp.dado_page'))
+            
     return render_template('compra.html')
 
 @main_bp.route('/dado')
@@ -74,8 +82,36 @@ def sua_conta_page():
 @admin_required
 def admin_page():
     users = User.query.order_by(User.created_at.desc()).all()
-    # A lógica de renda será implementada depois
-    return render_template('admin.html', users=users, daily_revenue=0, weekly_revenue=0, monthly_revenue=0, total_revenue=0)
+    
+    # --- Lógica de Cálculo de Receita ---
+    now_utc = datetime.now(timezone.utc)
+
+    # Contagem de assinaturas ativas agrupadas por plano
+    active_subs_counts = dict(db.session.query(
+        Subscription.plan_type,
+        func.count(Subscription.id)
+    ).filter(
+        Subscription.status == 'active',
+        Subscription.expires_at > now_utc
+    ).group_by(Subscription.plan_type).all())
+
+    # Cálculo da renda por tipo de plano ativo
+    renda_diaria = active_subs_counts.get('diario', 0) * 1.90
+    renda_semanal = active_subs_counts.get('semanal', 0) * 4.90
+    renda_mensal = active_subs_counts.get('mensal', 0) * 9.90
+
+    # Cálculo da receita total de todos os pagamentos aprovados
+    total_revenue_result = db.session.query(func.sum(Payment.amount)).filter_by(status='approved').scalar()
+    total_revenue = float(total_revenue_result) if total_revenue_result is not None else 0.0
+
+    return render_template(
+        'admin.html',
+        users=users,
+        renda_diaria=renda_diaria,
+        renda_semanal=renda_semanal,
+        renda_mensal=renda_mensal,
+        total_revenue=total_revenue
+    )
 
 @main_bp.route('/admin/dado')
 @admin_required

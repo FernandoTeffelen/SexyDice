@@ -4,29 +4,28 @@
 
 {% block page_header %}
     <h2 class="h3 mb-0">Painel de Administração</h2>
-    <div class="d-flex gap-3">
-        <div class="card text-center">
-            <div class="card-body p-2">
-                <h6 class="card-title mb-0 small">Renda Diária</h6>
-                <p class="card-text fw-bold">R$ {{ "%.2f"|format(daily_revenue) }}</p>
-            </div>
-        </div>
-        <div class="card text-center">
-            <div class="card-body p-2">
-                <h6 class="card-title mb-0 small">Renda Semanal</h6>
-                <p class="card-text fw-bold">R$ {{ "%.2f"|format(weekly_revenue) }}</p>
-            </div>
-        </div>
-        <div class="card text-center">
-            <div class="card-body p-2">
-                <h6 class="card-title mb-0 small">Renda Mensal</h6>
-                <p class="card-text fw-bold">R$ {{ "%.2f"|format(monthly_revenue) }}</p>
-            </div>
-        </div>
-    </div>
 {% endblock %}
 
 {% block admin_content %}
+    <div class="revenue-dashboard mb-4">
+        <div class="revenue-card">
+            <h3>Renda Planos Diários</h3>
+            <p class="amount">R$ {{ "%.2f"|format(renda_diaria) }}</p>
+        </div>
+        <div class="revenue-card">
+            <h3>Renda Planos Semanais</h3>
+            <p class="amount">R$ {{ "%.2f"|format(renda_semanal) }}</p>
+        </div>
+        <div class="revenue-card">
+            <h3>Renda Planos Mensais</h3>
+            <p class="amount">R$ {{ "%.2f"|format(renda_mensal) }}</p>
+        </div>
+        <div class="revenue-card">
+            <h3>Receita Total</h3>
+            <p class="amount total">R$ {{ "%.2f"|format(total_revenue) }}</p>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header">Usuários Cadastrados</div>
         <div class="table-responsive">
@@ -48,7 +47,7 @@
                         <th scope="row">{{ loop.index }}</th>
                         <td>{{ user.name }}</td>
                         <td>{{ user.email }}</td>
-                        <td>{{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ (user.created_at | localtime).strftime('%d/%m/%Y %H:%M') }}</td>
                         <td>
                             {% if user.subscription and user.subscription.status == 'active' %}
                                 <span class="badge bg-success">Ativado</span>
@@ -58,7 +57,7 @@
                         </td>
                         <td>
                             {% if user.subscription and user.subscription.expires_at %}
-                                {{ user.subscription.expires_at.strftime('%d/%m/%Y %H:%M') }}
+                                {{ (user.subscription.expires_at | localtime).strftime('%d/%m/%Y %H:%M') }}
                             {% else %}
                                 -
                             {% endif %}
