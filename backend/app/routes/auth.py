@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, session, current_app, url_for, fl
 from app import db
 from app.models import User, Subscription
 from datetime import datetime
-from app.utils.decorators import login_required # <-- LINHA DE IMPORTAÇÃO ADICIONADA
+from app.utils.decorators import login_required
 
 auth_bp = Blueprint('auth_bp', __name__)
 
@@ -21,10 +21,12 @@ def register():
     
     try:
         db.session.add(new_user)
+        db.session.add(new_subscription) # Adicionando explicitamente a assinatura
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"message": f"Erro ao registrar no banco de dados: {e}"}), 500
+        print(f"ERRO NO REGISTRO: {e}")
+        return jsonify({"message": f"Erro ao registrar no banco de dados."}), 500
 
     return jsonify({"message": "Usuário registrado com sucesso! Faça o login."}), 201
 
@@ -38,6 +40,7 @@ def login():
     admin_email = current_app.config['ADMIN_EMAIL']
     admin_password = current_app.config['ADMIN_PASSWORD']
 
+    # 1. Verifica se é admin
     if email == admin_email and password == admin_password:
         session.clear()
         session['user_id'] = 'admin'
@@ -45,13 +48,18 @@ def login():
         session['email'] = admin_email
         return jsonify({"message": "Login de admin bem-sucedido!", "redirect_url": url_for('main_bp.admin_page')}), 200
 
+    # 2. Verifica usuário comum
     user = User.query.filter_by(email=email).first()
     if user and user.check_password(password):
         session.clear()
         session['user_id'] = user.id
         session['name'] = user.name
         
-        return jsonify({"message": "Login bem-sucedido!", "redirect_url": url_for('main_bp.index')}), 200
+        # Após o login, SEMPRE redireciona para a página inicial.
+        # A lógica de proteção de rotas cuidará de direcioná-lo a partir dali.
+        redirect_url = url_for('main_bp.index')
+            
+        return jsonify({"message": "Login bem-sucedido!", "redirect_url": redirect_url}), 200
     
     return jsonify({"message": "E-mail ou senha inválidos."}), 401
 
@@ -63,24 +71,29 @@ def logout():
 @auth_bp.route('/update_profile', methods=['POST'])
 @login_required
 def update_profile():
+    # g.user é carregado pela função before_app_request
+    if not g.user or g.user.id == 'admin':
+        # Impede que o admin tente usar esta rota
+        return redirect(url_for('main_bp.index'))
+        
+    user = User.query.get(g.user.id)
+    
     name = request.form.get('name')
     email = request.form.get('email')
     current_password = request.form.get('current_password')
     new_password = request.form.get('new_password')
     
-    # g.user é carregado pela função before_app_request
-    user = g.user
-
     if not user.check_password(current_password):
         flash('Senha atual incorreta. Nenhuma alteração foi salva.', 'danger')
         return redirect(url_for('main_bp.sua_conta_page'))
 
     if name != user.name:
         user.name = name
+        session['name'] = name # Atualiza o nome na sessão
         flash('Nome alterado com sucesso!', 'success')
 
     if email != user.email:
-        if User.query.filter_by(email=email).first():
+        if User.query.filter(User.email == email, User.id != user.id).first():
             flash('Este e-mail já está em uso por outra conta.', 'warning')
         else:
             user.email = email
