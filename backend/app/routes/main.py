@@ -43,9 +43,17 @@ def load_logged_in_user():
 
 @main_bp.app_context_processor
 def inject_user():
-    """Torna g.user e o status do modo gratuito disponíveis para os templates."""
+    """Torna g.user e as configs de modo gratuito disponíveis para os templates."""
     is_free_mode = os.environ.get('FREE_ACCESS_MODE') == 'true'
-    return dict(current_user=g.get('user'), is_free_mode=is_free_mode)
+    
+    # Defina aqui a data final da sua promoção
+    free_mode_end_date = "01/08/2025" 
+    
+    return dict(
+        current_user=g.get('user'), 
+        is_free_mode=is_free_mode,
+        free_mode_end_date=free_mode_end_date # <-- Variável adicionada
+    )
 
 @main_bp.route('/')
 def index():
@@ -62,15 +70,14 @@ def cadastro_page():
 @main_bp.route('/compra')
 @login_required
 def compra_page():
-    if g.user and g.user.subscription and g.user.subscription.status == 'active':
-        
-        # --- MUDANÇA PRINCIPAL AQUI ---
-        # Usando datetime.now(timezone.utc) para a comparação correta
-        is_active_and_not_expired = (g.user.id == 'admin' or 
-                                     g.user.subscription.expires_at is None or 
-                                     g.user.subscription.expires_at > datetime.now(timezone.utc))
+    # Se o modo gratuito estiver ativo, redireciona o usuário direto para o jogo.
+    if os.environ.get('FREE_ACCESS_MODE') == 'true':
+        return redirect(url_for('main_bp.dado_page'))
 
-        if is_active_and_not_expired:
+    # Se não estiver no modo gratuito, a lógica que já tínhamos continua:
+    # Se o usuário já tem assinatura ativa, redireciona para o dado
+    if g.user and g.user.subscription and g.user.subscription.status == 'active':
+        if g.user.id == 'admin' or (g.user.subscription.expires_at and g.user.subscription.expires_at > datetime.now(timezone.utc)):
             return redirect(url_for('main_bp.dado_page'))
             
     return render_template('compra.html')
