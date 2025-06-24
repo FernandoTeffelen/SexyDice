@@ -18,7 +18,7 @@ def localtime_filter(utc_dt):
 @main_bp.before_app_request
 def load_logged_in_user():
     """
-    Carrega o usuário logado antes de CADA requisição.
+    Carrega o usuário logado antes de cada requisição.
     A mudança principal está aqui: garantimos que todo g.user tenha o atributo .role.
     """
     user_id = session.get('user_id')
@@ -27,12 +27,17 @@ def load_logged_in_user():
         if user_id == 'admin':
             # Para o admin, criamos um objeto com a role definida
             from types import SimpleNamespace
-            g.user = SimpleNamespace(id='admin', name='Admin', role='admin', subscription=SimpleNamespace(status='active'))
+            g.user = SimpleNamespace(
+                id='admin', 
+                name='Admin', 
+                role='admin', 
+                subscription=SimpleNamespace(status='active', expires_at=None)
+            )
         else:
             # Para o usuário comum, buscamos no DB e adicionamos o atributo role
             user = User.query.get(user_id)
             if user:
-                user.role = 'user' # Adicionando o atributo que faltava
+                user.role = 'user' # Adicionando o atributo que faltava dinamicamente
                 g.user = user
 
 @main_bp.app_context_processor
