@@ -96,36 +96,71 @@ def sua_conta_page():
 @main_bp.route('/admin')
 @admin_required
 def admin_page():
-    users = User.query.order_by(User.created_at.desc()).all()
+    # --- LÓGICA DE CÁLCULO DE RECEITA ---
     
-    # --- Lógica de Cálculo de Receita ---
-    now_utc = datetime.now(timezone.utc)
-
-    # Contagem de assinaturas ativas agrupadas por plano
+    # 1. Renda por plano ativo
     active_subs_counts = dict(db.session.query(
         Subscription.plan_type,
         func.count(Subscription.id)
     ).filter(
         Subscription.status == 'active',
-        Subscription.expires_at > now_utc
+        Subscription.expires_at > datetime.now(timezone.utc)
     ).group_by(Subscription.plan_type).all())
 
-    # Cálculo da renda por tipo de plano ativo
     renda_diaria = active_subs_counts.get('diario', 0) * 1.90
     renda_semanal = active_subs_counts.get('semanal', 0) * 4.90
     renda_mensal = active_subs_counts.get('mensal', 0) * 9.90
 
-    # Cálculo da receita total de todos os pagamentos aprovados
-    total_revenue_result = db.session.query(func.sum(Payment.amount)).filter_by(status='approved').scalar()
-    total_revenue = float(total_revenue_result) if total_revenue_result is not None else 0.0
+    # 2. Receita total de assinaturas
+    total_subscription_revenue = db.session.query(func.sum(Payment.amount)).filter(
+        Payment.status == 'approved',
+        Payment.plan_type != 'doacao' # Exclui doações
+    ).scalar() or 0.0
+
+    # 3. Receita total de doações (vamos precisar salvar as doações como um tipo de pagamento para isso funcionar)
+    # Por enquanto, deixaremos como placeholder.
+    total_donation_revenue = 0.0 # Placeholder
+    
+    # --- LÓGICA DE PROCESSAMENTO DE USUÁRIOS ---
+    
+    users = User.query.order_by(User.created_at.desc()).all()
+    now_utc = datetime.now(timezone.utc)
+    processed_users = []
+
+    for user in users:
+        # Lógica correta para verificar se a assinatura está ativa
+        subscription = user.subscription
+        is_active = subscription and subscription.status == 'active' and (subscription.expires_at is None or subscription.expires_at > now_utc)
+
+        # Calcula o tempo restante
+        tempo_restante_str = "-"
+        if is_active and subscription.expires_at:
+            time_left = subscription.expires_at - now_utc
+            days = time_left.days
+            hours = time_left.seconds // 3600
+            tempo_restante_str = f"{days}d {hours}h"
+
+        # Calcula o total de dias já comprados
+        total_days_purchased = db.session.query(func.sum(Payment.duration_days)).filter_by(
+            user_id=user.id, 
+            status='approved'
+        ).scalar() or 0
+
+        processed_users.append({
+            'user': user,
+            'is_active': is_active,
+            'tempo_restante': tempo_restante_str,
+            'dias_totais': total_days_purchased
+        })
 
     return render_template(
         'admin.html',
-        users=users,
+        users_data=processed_users,
         renda_diaria=renda_diaria,
         renda_semanal=renda_semanal,
         renda_mensal=renda_mensal,
-        total_revenue=total_revenue
+        total_revenue=total_subscription_revenue,
+        donation_revenue=total_donation_revenue
     )
 
 @main_bp.route('/admin/dado')

@@ -7,22 +7,26 @@
 {% endblock %}
 
 {% block admin_content %}
-    <div class="revenue-dashboard mb-4">
+    <div class="revenue-dashboard">
         <div class="revenue-card">
-            <h3>Renda Planos Diários</h3>
+            <h3>Renda Planos Diários (Ativos)</h3>
             <p class="amount">R$ {{ "%.2f"|format(renda_diaria) }}</p>
         </div>
         <div class="revenue-card">
-            <h3>Renda Planos Semanais</h3>
+            <h3>Renda Planos Semanais (Ativos)</h3>
             <p class="amount">R$ {{ "%.2f"|format(renda_semanal) }}</p>
         </div>
         <div class="revenue-card">
-            <h3>Renda Planos Mensais</h3>
+            <h3>Renda Planos Mensais (Ativos)</h3>
             <p class="amount">R$ {{ "%.2f"|format(renda_mensal) }}</p>
         </div>
         <div class="revenue-card">
-            <h3>Receita Total</h3>
+            <h3>Receita Total (Assinaturas)</h3>
             <p class="amount total">R$ {{ "%.2f"|format(total_revenue) }}</p>
+        </div>
+        <div class="revenue-card">
+            <h3>Receita Total (Doações)</h3>
+            <p class="amount donation">R$ {{ "%.2f"|format(donation_revenue) }}</p>
         </div>
     </div>
 
@@ -35,36 +39,32 @@
                         <th scope="col">#</th>
                         <th scope="col">Nome</th>
                         <th scope="col">E-mail</th>
-                        <th scope="col">Data de Cadastro</th>
+                        <th scope="col">Data Cadastro</th>
                         <th scope="col">Assinatura</th>
-                        <th scope="col">Expira em</th>
+                        <th scope="col">Tempo Restante</th>
+                        <th scope="col">Total Dias Comprados</th>
                         <th scope="col">Plano</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for user in users %}
+                    {% for data in users_data %}
                     <tr>
                         <th scope="row">{{ loop.index }}</th>
-                        <td>{{ user.name }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ (user.created_at | localtime).strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ data.user.name }}</td>
+                        <td>{{ data.user.email }}</td>
+                        <td>{{ data.user.created_at.strftime('%d/%m/%Y') }}</td>
                         <td>
-                            {% if user.subscription and user.subscription.status == 'active' %}
+                            {% if data.is_active %}
                                 <span class="badge bg-success">Ativado</span>
                             {% else %}
                                 <span class="badge bg-danger">Desativado</span>
                             {% endif %}
                         </td>
+                        <td>{{ data.tempo_restante }}</td>
+                        <td>{{ data.dias_totais }} dias</td>
                         <td>
-                            {% if user.subscription and user.subscription.expires_at %}
-                                {{ (user.subscription.expires_at | localtime).strftime('%d/%m/%Y %H:%M') }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if user.subscription and user.subscription.plan_type %}
-                                {{ user.subscription.plan_type|capitalize }}
+                            {% if data.user.subscription and data.user.subscription.plan_type %}
+                                {{ data.user.subscription.plan_type|capitalize }}
                             {% else %}
                                 -
                             {% endif %}
@@ -72,7 +72,7 @@
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="7" class="text-center">Nenhum usuário cadastrado ainda.</td>
+                        <td colspan="8" class="text-center">Nenhum usuário cadastrado ainda.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
