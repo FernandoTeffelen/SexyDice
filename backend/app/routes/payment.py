@@ -108,3 +108,23 @@ def payment_status(mercado_pago_id):
         return jsonify({"status": "not_found"}), 404
         
     return jsonify({"status": payment.status}), 200
+
+@payment_bp.route('/create_donation_pix', methods=['POST'])
+def create_donation_pix():
+    data = request.get_json()
+    amount = data.get('amount')
+    email = data.get('email', 'doacao.anonima@email.com') # Usa um email padrão se não for fornecido
+
+    if not amount or float(amount) < 1.00:
+        return jsonify({"error": "O valor da doação deve ser de no mínimo R$ 1,00."}), 400
+
+    payment_service = PaymentService()
+    result = payment_service.create_donation_pix(
+        amount=amount,
+        payer_email=email
+    )
+
+    if result.get("success"):
+        return jsonify(result), 200
+    else:
+        return jsonify({"error": result.get("error")}), 500

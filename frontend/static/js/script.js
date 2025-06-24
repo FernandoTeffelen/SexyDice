@@ -122,13 +122,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             ordemAleatoria.forEach((dadoIndex, posicao) => {
                 const label = activeDiceElements[dadoIndex].label;
+                const numeroOrdinal = ordinal(posicao + 1);
                 let destaque;
 
-                if (posicao === 0) destaque = `<span class="primeiro">${ordinal(posicao + 1)}</span>`;
-                else if (posicao === 1) destaque = `<span class="segundo">${ordinal(posicao + 1)}</span>`;
-                else if (posicao === 2) destaque = `<span class="terceiro">${ordinal(posicao + 1)}</span>`;
-                else destaque = `<span class="sublinhado">${ordinal(posicao + 1)}</span>`;
+                if (posicao === 0) destaque = `<span class="primeiro">${numeroOrdinal}</span>`;
+                else if (posicao === 1) destaque = `<span class="segundo">${numeroOrdinal}</span>`;
+                else if (posicao === 2) destaque = `<span class="terceiro">${numeroOrdinal}</span>`;
+                else destaque = `<span class="sublinhado">${numeroOrdinal}</span>`;
 
+                // --- MUDANÇA AQUI ---
+                // Corrigido para "Sugestão" e garantindo o espaço
                 label.innerHTML = `Sugestão: ${destaque} colocada`;
             });
         }).finally(() => {

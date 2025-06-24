@@ -52,7 +52,8 @@ def inject_user():
     return dict(
         current_user=g.get('user'), 
         is_free_mode=is_free_mode,
-        free_mode_end_date=free_mode_end_date # <-- Variável adicionada
+        free_mode_end_date=free_mode_end_date,
+        current_year=datetime.utcnow().year
     )
 
 @main_bp.route('/')
@@ -131,3 +132,7 @@ def admin_page():
 @admin_required
 def admin_dado_page():
     return render_template('admin_dado.html')
+
+@main_bp.route('/doacao')
+def doacao_page():
+    return render_template('doacao.html')

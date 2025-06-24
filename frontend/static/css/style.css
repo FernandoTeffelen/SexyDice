@@ -1,118 +1,144 @@
 /* =================================================================== */
-/* 1. ESTILOS GLOBAIS E ESTRUTURAIS                                    */
+/* 1. CONFIGURAÇÃO GLOBAL E VARIÁVEIS DE COR                           */
 /* =================================================================== */
-/* Define o comportamento base para todas as páginas */
+:root {
+    --primary-color: #7c3aed; /* Roxo vibrante */
+    --secondary-color: #db2777; /* Rosa/Magenta */
+    --dark-bg: #111827; /* Fundo escuro principal */
+    --dark-bg-secondary: #1f2937; /* Fundo escuro para cards/navbar */
+    --text-light: #f3f4f6;
+    --text-muted: #9ca3af;
+    --font-family-base: 'Poppins', sans-serif;
+}
 
 body {
-    margin: 0;
-    /* padding: 2rem 1rem; <-- REMOVA OU ALTERE ESTA LINHA */
-    padding: 0; /* Garante que o menu encoste no topo */
-    background: #f0f0f0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    /* As propriedades de flexbox no body não são mais necessárias aqui */
-}
-
-
-/* =================================================================== */
-/* 2. PÁGINA INICIAL (HOME)                                            */
-/* =================================================================== */
-/* Estilos específicos para a página 'index.html' */
-
-.main-content {
-    padding: 2rem 1rem;
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    font-family: var(--font-family-base);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    min-height: 100vh;
 }
 
-.home-container {
-    text-align: center;
-    width: 100%;
-    max-width: 800px;
-}
-
-.home-title {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.home-subtitle {
-    font-size: 1.2rem;
-    color: #666;
-    margin-bottom: 3%;
-}
-
-.home-buttons {
+.main-content {
+    flex-grow: 1;
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 1.5rem;
 }
 
-.home-buttons .btn {
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
+.plan-option .form-check-input {
+    display: none;
 }
 
-/* --- Seção do Vídeo Promocional --- */
+/* =================================================================== */
+/* 2. BARRA DE NAVEGAÇÃO (NAVBAR)                                      */
+/* =================================================================== */
+.navbar {
+    background-color: var(--dark-bg-secondary);
+    border-bottom: 1px solid #374151;
+    padding: 0.75rem 10.5rem;
+}
+
+.navbar-brand {
+    color: var(--text-light);
+}
+
+.navbar .nav-link {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.navbar .nav-link.active,
+.navbar .nav-link:hover {
+    color: var(--primary-color);
+}
+
+.navbar .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    font-weight: 600;
+}
+
+.navbar .btn-primary:hover {
+    background-color: #6d28d9;
+    border-color: #6d28d9;
+}
+
+/* =================================================================== */
+/* 3. PÁGINA INICIAL (HOME - HERO SECTION)                             */
+/* =================================================================== */
+.hero-section {
+    padding: 4rem 0;
+}
+
+.hero-section .display-4 {
+    color: var(--text-light);
+}
+
+.hero-section .lead {
+    color: var(--text-muted);
+    max-width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (min-width: 992px) {
+    .hero-section .lead {
+        max-width: 100%;
+        margin-left: 0;
+    }
+}
 
 .video-container {
     position: relative;
-    display: inline-block;
-    line-height: 0;
-    cursor: pointer;
-    margin-bottom: 1.5rem;
+    max-width: 350px;
+    margin: 0 auto;
+    border-radius: 24px;
+    border: 2px solid #374151;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 }
 
 #promoVideo {
-    max-height: 70vh;
-    max-width: 100%;
+    width: 100%;
     height: auto;
-    width: auto;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    display: block;
 }
 
 .replay-icon {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
-    font-size: 5rem;
+    font-size: 4rem;
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 0;
     transition: opacity 0.3s ease;
-    border-radius: 12px; 
+    cursor: pointer;
 }
 
-/* Ativa a transição de opacidade para o ícone de replay */
 .replay-icon[style*="display: flex"] {
     opacity: 1;
 }
 
-
 /* =================================================================== */
-/* 3. PÁGINA DO JOGO (DADOS)                                           */
+/* 4. PÁGINA DO JOGO (DADOS)                                           */
 /* =================================================================== */
-/* Estilos específicos para a página 'dado.html' */
 
-.container {
-    text-align: center;
+.dice-container {
+    padding: 5rem 2rem; /* Aumenta o espaçamento interno */
+    border-radius: 16px;
     width: 100%;
-    max-width: 60%;
-    box-sizing: border-box;
+    max-width: 1200px; /* Aumenta mais o container */
+    text-align: center; /* Centraliza o botão 'Girar' */
 }
 
 .dice-selector-container {
-    max-width: 300px;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 350px;
+    margin: 0 auto 3rem auto;
     text-align: left;
 }
 
@@ -120,285 +146,163 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 5%;
-    margin-bottom: 2.5%;
+    gap: 2rem;
+    margin-bottom: 2rem;
 }
 
 .dice-block {
+    /* Removemos o fundo e a borda para tirar o efeito de "caixa" */
+    flex-basis: calc(33.333% - 2.5rem); /* Aumenta a base dos dados */
+    min-width: 250px; /* Garante que os dados fiquem grandes */
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 25%;
-    min-width: 25%;
-    padding: 0% 1%;
-    margin-bottom: 1.1%;
+    padding: 0; /* Removemos o padding interno do bloco */
 }
 
-.dice-block h2 {
-    margin-bottom: 1%;
-    font-size: 1.2rem;
-    color: #222;
+.dice-block .dice-title {
+    font-size: 1.25rem;
+    color: var(--text-light); /* Cor mais clara para o título */
+    font-weight: 600;
+    margin-bottom: 0.1rem;
 }
 
 .dice {
     width: 100%;
+    max-width: 75%; /* Aumenta o tamanho máximo da imagem */
     aspect-ratio: 1 / 1;
     transition: transform 1s ease;
     transform-style: preserve-3d;
-    margin-bottom: 4%;
+    cursor: pointer;
 }
 
 .dice img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
     user-select: none;
     pointer-events: none;
 }
 
-/* --- Estilos dos Rótulos dos Dados e Sugestões --- */
-
 .dice-label {
     margin: 0;
     font-weight: 600;
-    color: #333;
-    font-size: 1rem;
-    user-select: none;
-    line-height: 1.2;
-    text-align: center;
+    color: var(--text-muted); /* Cor mais sutil para o texto de posições/sugestão */
+    font-size: 1.1rem;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.primeiro { color: #e74c3c; font-weight: bold; font-size: 1.3em; }
-.segundo { color: #2980b9; font-weight: bold; font-size: 1.2em; }
-.terceiro { color: #27ae60; font-weight: bold; font-size: 1.1em; }
-.prefixo { display: inline; }
-.sublinhado { text-decoration: underline; }
+/* Estilos dos Rótulos de Sugestão (cores ajustadas para o tema escuro) */
+.primeiro { color: #f87171; font-weight: bold; font-size: 1.2em; }
+.segundo { color: #60a5fa; font-weight: bold; font-size: 1.1em; }
+.terceiro { color: #4ade80; font-weight: bold; font-size: 1.0em; }
+.sublinhado { text-decoration: underline; text-decoration-color: var(--primary-color); }
 
-/* Mantém o hover do botão de Girar Dados antigo, caso não use Bootstrap */
-button:hover, button:focus {
-    background-color: #006f94;
-    outline: none;
+/* Garante que o botão fique centralizado e com margem */
+#rollBtn {
+    margin-top: 0.5rem;
 }
-
 
 /* =================================================================== */
-/* 4. PÁGINAS DE FORMULÁRIO (LOGIN / CADASTRO)                         */
+/* 5. RODAPÉ (FOOTER)                                                  */
 /* =================================================================== */
-/* Estilos compartilhados entre 'login.html' e 'cadastro.html' */
-
-.form-container {
-    background: #fff;
-    padding: 2.5rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    max-width: 450px;
-    width: 100%;
-    position: relative;
+.site-footer {
+    background-color: var(--dark-bg-secondary);
+    border-top: 1px solid #374151;
+    font-size: 0.9rem;
+    color: var(--text-muted);
 }
 
-.form-container h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-    font-weight: 600;
+.social-icon {
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    transition: color 0.3s ease;
 }
 
-.form-container .input-group-text {
-    background-color: #e9ecef;
-    border-right: none;
+.social-icon:hover {
+    color: var(--primary-color);
 }
 
-.form-container .form-control {
-    border-left: none;
-}
-
-.form-container a {
-    color: #008cba;
+.footer-contact a {
     text-decoration: none;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
 }
 
-.form-container a:hover {
+.footer-contact a:hover {
+    color: var(--text-light);
     text-decoration: underline;
 }
 
+/* Outros estilos como form-container, admin, etc. podem ser adicionados e adaptados aqui */
 
 /* =================================================================== */
-/* 5. COMPONENTES REUTILIZÁVEIS                                        */
+/* 6. MEDIA QUERY (ESTILOS RESPONSIVOS)                                */
 /* =================================================================== */
-/* Estilos para pequenos componentes usados em várias páginas */
 
-.back-link {
-    position: absolute;
-    top: 1.5rem;
-    left: 1.5rem;
-    font-size: 1.2rem;
-    color: #555;
-    text-decoration: none;
+@media (max-width: 991.98px) {
+    /* Ajustes para tablets e dispositivos menores */
+    .hero-section .display-4 {
+        font-size: 2.5rem; /* Reduz um pouco o título principal */
+    }
+    .dice-block {
+        flex-basis: calc(50% - 1.5rem); /* Grade de 2 colunas em tablets */
+        min-width: 200px;
+    }
 }
 
-.back-link:hover {
-    color: #000;
-}
+@media (max-width: 767.98px) {
+    /* Ajustes para celulares */
 
-.back-link.top-left {
-    top: 1rem;
-    left: 1rem;
-}
-
-.page-container {
-    width: 100%;
-    max-width: 1200px; /* ou a largura que preferir */
-    margin: 0 auto;
-}
-
-.back-link-standalone {
-    font-size: 1.1rem;
-    color: #555;
-    text-decoration: none;
-}
-.back-link-standalone:hover {
-    color: #000;
-}
-
-.plan-option .form-check-input {
-    display: none;
-}
-
-/* --- Estilo para o Banner de Modo Gratuito --- */
-.free-mode-banner {
-    width: 90%;
-    max-width: 800px;
-    margin: 1.5rem auto;
-    padding: 1rem 1.5rem;
-    border: 1px solid #c3e6cb;
-    background-color: #d4edda;
-    color: #155724;
-    border-radius: 8px;
-    text-align: center;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-/* =================================================================== */
-/* 6. MEDIA QUERY (ESTILOS PARA CELULAR)                               */
-/* =================================================================== */
-/* Todas as regras de responsividade para telas menores */
-
-@media (max-width: 430px) {
-    
     /* --- Ajustes Globais --- */
-    body {
-        padding: 1rem 0.5rem;
+    .main-content {
+        padding: 2rem 1rem;
     }
 
-    /* --- Ajustes da Página Home --- */
-    .home-title {
-        font-size: 2rem;
+    /* --- Ajustes da Página Inicial (Home) --- */
+    .hero-section {
+        text-align: center; /* Centraliza o texto no mobile */
     }
-    .home-subtitle {
-        font-size: 1rem;
-        margin-bottom: 1rem;
+    .hero-section .display-4 {
+        font-size: 2.2rem; /* Reduz ainda mais o título */
     }
-    .home-buttons {
+
+    /* --- Ajustes do Painel de Admin --- */
+    .admin-container header .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important; /* Alinha itens do cabeçalho do admin */
+    }
+    .admin-container .revenue-dashboard {
+        flex-direction: column; /* Empilha os cards de renda */
+        gap: 1rem;
+    }
+
+    /* --- Ajustes do Rodapé --- */
+    .site-footer .container {
         flex-direction: column;
         gap: 1rem;
     }
-    #promoVideo {
-        max-height: 55vh;
+    .site-footer .col-md-4 {
+        text-align: center !important; /* Força tudo a ser centralizado no mobile */
     }
-    .video-container {
-        margin-bottom: 5%;
-    }
-    .replay-icon {
-        font-size: 4rem;
-    }
+}
 
-    /* --- Ajustes da Página de Dados --- */
-    .container {
-        max-width: 100%;
+@media (max-width: 576px) {
+    /* ... (outros ajustes para celular) ... */
+    
+    .dice-block {
+        flex-basis: 90%; /* Uma coluna em celulares */
+        min-width: unset;
         width: 100%;
-        padding: 0% 2% 1% 2%;
+        max-width: 300px;
     }
-    .dice-row { 
-        gap: 5%; 
-        margin-bottom: 0; 
+    
+    .dice-container {
+        padding: 1.5rem 1rem;
     }
-    .dice-block { 
-        max-width: 42%; 
-        min-width: 42%; 
-        margin-bottom: 0; 
-    }
-    .dice { 
-        height: auto; 
-        margin-bottom: 1%; 
-        max-height: 51%; 
-        max-width: 90%; 
-    }
-    .dice-block h2 { 
-        margin-bottom: 0%; 
-        font-size: 1rem; 
-        color: #222; 
-    }
-    .dice-label { 
-        font-size: 0.8rem; 
-        display: flex; 
-        flex-direction: column; 
-        gap: 0; 
-        margin-top: 0; 
-        margin-bottom: 0; 
-    }
-    .prefixo { 
-        display: none; 
-    }
-
-    /* --- Ajustes dos Formulários --- */
-    .form-container {
-        padding: 2rem 1.5rem;
-        width: 95%;
-    }
-    .back-link { 
-        top: 1rem; 
-        left: 1rem; 
-    }
-}
-
-/* =================================================================== */
-/* 7. PAINEL DE ADMINISTRAÇÃO                                          */
-/* =================================================================== */
-/* Estilos para o dashboard de receita no admin.html */
-
-.revenue-dashboard {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 1rem; /* Ajustado para melhor responsividade */
-    margin-bottom: 2.5rem;
-    text-align: center;
-}
-
-.revenue-card {
-    background-color: #f8f9fa;
-    padding: 1rem; /* Ajustado para melhor responsividade */
-    border-radius: 8px;
-    flex-grow: 1;
-    border: 1px solid #dee2e6;
-    min-width: 200px; /* Largura mínima para evitar quebra de linha */
-}
-
-.revenue-card h3 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-    color: #495057;
-    font-size: 1rem; /* Ajustado */
-}
-
-.revenue-card .amount {
-    font-size: 1.75rem; /* Ajustado */
-    font-weight: 700;
-    color: #0d6efd; /* Cor primária do Bootstrap */
-}
-
-.revenue-card .total {
-    color: #198754; /* Cor de sucesso do Bootstrap */
 }

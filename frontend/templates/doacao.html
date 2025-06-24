@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Faça uma Doação{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div id="donation-form-area" class="card shadow-lg border-0 p-4">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-primary">Apoie o Projeto!</h2>
+                    <p class="lead text-muted">Sua doação ajuda a manter o site no ar e me incentiva a criar novas funcionalidades.</p>
+                </div>
+
+                <div class="mb-3">
+                    <label for="donationAmount" class="form-label fw-bold"><i class="bi bi-cash-coin me-2"></i>Valor da Doação (R$)</label>
+                    <input type="number" class="form-control form-control-lg" id="donationAmount" min="1" step="0.01" placeholder="Mínimo R$ 1,00" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="payerEmail" class="form-label fw-bold"><i class="bi bi-envelope-fill me-2"></i>Seu E-mail (Opcional)</label>
+                    <input type="email" class="form-control form-control-lg" id="payerEmail" placeholder="Para identificarmos sua doação">
+                </div>
+
+                <button id="donateButton" class="btn btn-warning btn-lg w-100 py-3">
+                    <i class="bi bi-heart-fill me-2"></i> Gerar PIX para Doação
+                </button>
+                 <div id="error-message" class="alert alert-danger mt-3 text-center" style="display: none;"></div>
+            </div>
+
+            <div id="payment-area" class="card shadow-lg border-0 p-4 text-center" style="display: none;">
+                <h3 class="text-success mb-3"><i class="bi bi-check-circle-fill me-2"></i> Muito Obrigado!</h3>
+                <p class="text-muted mb-4">Sua ajuda é muito importante. Escaneie o QR Code abaixo para completar sua doação.</p>
+                
+                <img id="qrCodeImage" src="" alt="QR Code PIX" class="img-fluid mb-3 mx-auto" style="max-width: 280px; border: 2px solid #198754; border-radius: 8px;">
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/doacao.js') }}"></script>
+{% endblock %}

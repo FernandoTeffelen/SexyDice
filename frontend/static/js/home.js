@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const videoWrapper = document.getElementById("videoWrapper");
 
     let loopCount = 0;
-    const maxLoops = 1;
+    const maxLoops = 2;
 
     // Função que é chamada quando o vídeo termina
     video.addEventListener("ended", () => {

@@ -71,3 +71,29 @@ class PaymentService:
         except Exception as e:
             current_app.logger.error(f"Exceção ao criar pagamento PIX: {e}", exc_info=True)
             return {"success": False, "error": "Ocorreu um erro interno no servidor."}
+        
+    def create_donation_pix(self, amount, payer_email):
+        try:
+            expiration_time = datetime.now(timezone.utc) + timedelta(minutes=30)
+            expiration_time_iso = expiration_time.strftime('%Y-%m-%dT%H:%M:%S.000-03:00')
+
+            payment_data = {
+                "transaction_amount": float(amount),
+                "description": "Doação para o projeto SexyDice",
+                "payment_method_id": "pix",
+                "date_of_expiration": expiration_time_iso,
+                "payer": {"email": payer_email}
+            }
+            payment_response = self.sdk.payment().create(payment_data)
+            payment = payment_response.get("response")
+
+            if payment and payment.get("id"):
+                return {
+                    "success": True,
+                    "qr_code_base64": payment["point_of_interaction"]["transaction_data"]["qr_code_base64"]
+                }
+            else:
+                return {"success": False, "error": "Falha na API do Mercado Pago."}
+        except Exception as e:
+            print(f"Exceção ao criar PIX de doação: {e}")
+            return {"success": False, "error": "Erro interno no servidor."}
