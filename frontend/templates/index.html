@@ -3,13 +3,13 @@
 {% block content %}
 <div class="home-container">
     <main>
-        <h1 class="home-title">Bem-vindo ao SexyDice</h1>
-        <p class="home-subtitle">Apimente sua relação com um jogo divertido e ousado.</p>
         {% if is_free_mode %}
         <div class="free-mode-banner">
             O período de teste gratuito termina em <strong>{{ free_mode_end_date }}</strong>. Aproveite!
         </div>
         {% endif %}
+        <h1 class="home-title">Bem-vindo ao SexyDice</h1>
+        <p class="home-subtitle">Apimente sua relação com um jogo divertido e ousado.</p>
         <div class="video-container" id="videoWrapper">
             <video id="promoVideo" src="{{ url_for('static', filename='videos/video-posicoes.mp4') }}" muted autoplay playsinline></video>
             <div class="replay-icon" id="replayIcon" style="display: none;">

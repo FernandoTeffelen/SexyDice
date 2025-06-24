@@ -47,7 +47,7 @@ def inject_user():
     is_free_mode = os.environ.get('FREE_ACCESS_MODE') == 'true'
     
     # Defina aqui a data final da sua promoção
-    free_mode_end_date = "01/08/2025" 
+    free_mode_end_date = "27/06/2025" 
     
     return dict(
         current_user=g.get('user'), 
