@@ -1,3 +1,4 @@
+import os
 from flask import Blueprint, render_template, session, g, redirect, url_for
 from app.models import User, Subscription, Payment
 from app.utils.decorators import login_required, admin_required, subscription_required
@@ -42,8 +43,9 @@ def load_logged_in_user():
 
 @main_bp.app_context_processor
 def inject_user():
-    """Torna o usuário disponível para todos os templates como 'current_user'."""
-    return dict(current_user=g.get('user'))
+    """Torna g.user e o status do modo gratuito disponíveis para os templates."""
+    is_free_mode = os.environ.get('FREE_ACCESS_MODE') == 'true'
+    return dict(current_user=g.get('user'), is_free_mode=is_free_mode)
 
 @main_bp.route('/')
 def index():

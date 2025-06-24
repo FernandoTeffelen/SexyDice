@@ -14,7 +14,7 @@ class PaymentService:
             raise ValueError("Mercado Pago Access Token não foi configurado nas variáveis de ambiente.")
         self.sdk = mercadopago.SDK(access_token)
 
-    def create_pix_payment(self, user_id, plan_type, amount, duration_days):
+    def create_pix_payment(self, amount, description, payer_email, user_id, plan_type, duration_days): # <-- 'description' adicionado aqui
         """
         Cria uma ordem de pagamento PIX no Mercado Pago com tempo de expiração.
         """
@@ -23,22 +23,14 @@ class PaymentService:
             if not user:
                 return {"success": False, "error": "Usuário não encontrado."}
 
-            # --- INÍCIO DA LÓGICA DE EXPIRAÇÃO ADICIONADA DE VOLTA ---
-            
-            # Define o tempo de expiração para 15 minutos a partir de agora
             expiration_time = datetime.now(timezone.utc) + timedelta(minutes=15)
-            
-            # Converte para o formato de data que a API do Mercado Pago espera
             expiration_time_iso = expiration_time.strftime('%Y-%m-%dT%H:%M:%S.000-03:00')
 
-            # --- FIM DA LÓGICA DE EXPIRAÇÃO ---
-
-            # Monta os dados do pagamento
             payment_data = {
                 "transaction_amount": float(amount),
-                "description": f"Plano {plan_type.capitalize()} - SexyDice",
+                "description": description, # Agora este valor vem da rota
                 "payment_method_id": "pix",
-                "date_of_expiration": expiration_time_iso, # <-- CAMPO ADICIONADO AQUI
+                "date_of_expiration": expiration_time_iso,
                 "payer": {
                     "email": user.email,
                     "first_name": user.name.split(' ')[0],
@@ -46,7 +38,8 @@ class PaymentService:
                 },
                 "external_reference": str(user_id)
             }
-
+            
+            # O resto da função continua exatamente como estava
             payment_response = self.sdk.payment().create(payment_data)
             payment = payment_response.get("response")
 
@@ -78,12 +71,3 @@ class PaymentService:
         except Exception as e:
             current_app.logger.error(f"Exceção ao criar pagamento PIX: {e}", exc_info=True)
             return {"success": False, "error": "Ocorreu um erro interno no servidor."}
-
-    def get_payment_details(self, payment_id):
-        """Busca os detalhes de um pagamento no Mercado Pago."""
-        try:
-            payment_response = self.sdk.payment().get(payment_id)
-            return payment_response.get("response")
-        except Exception as e:
-            current_app.logger.error(f"Erro ao buscar detalhes do pagamento {payment_id}: {e}", exc_info=True)
-            return None

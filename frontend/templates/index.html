@@ -12,7 +12,7 @@
             </div>
         </div>
         <div class="home-buttons">
-            {% if not current_user or (current_user.role == 'user' and (not current_user.subscription or current_user.subscription.status != 'active')) %}
+            {% if not is_free_mode %}
                 <a href="{{ url_for('main_bp.compra_page') }}" class="btn btn-primary btn-lg">
                     <i class="bi bi-cart-check"></i> Comprar Acesso
                 </a>
