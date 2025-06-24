@@ -183,7 +183,6 @@ body {
     transition: transform 1s ease;
     transform-style: preserve-3d;
     margin-bottom: 0.25rem; /* <-- NOVO VALOR (MENOR) */
-    cursor: pointer;
 }
 
 .dice img {

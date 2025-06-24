@@ -15,6 +15,11 @@
         {% endif %}
     {% endwith %}
 
+    {% if is_free_mode %}
+    <div class="free-mode-banner">
+        O período de teste gratuito termina em <strong>{{ free_mode_end_date }}</strong>. Aproveite!
+    </div>
+    {% endif %}
     <h2>Minha Conta</h2>
 
     {% if current_user.role != 'admin' and current_user.subscription and current_user.subscription.status == 'active' and current_user.subscription.expires_at %}
