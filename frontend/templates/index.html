@@ -6,6 +6,11 @@
 <div class="container hero-section">
     <div class="row align-items-center">
         <div class="col-lg-6 text-center text-lg-start">
+            {% if is_free_mode %}
+            <div class="free-mode-banner">
+                O período de teste gratuito termina em <strong>{{ free_mode_end_date }}</strong>. Aproveite!
+            </div>
+            {% endif %}
             <h1 class="display-4 fw-bold mb-3">Descubra Novas Formas de Apimentar a Relação</h1>
             <p class="lead mb-4">
                 Com o SexyDice, cada jogada é uma nova surpresa. Deixe os dados guiarem a noite e explore momentos inesquecíveis com seu par.
