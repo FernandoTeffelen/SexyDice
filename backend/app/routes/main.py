@@ -1,6 +1,6 @@
 import os
-from flask import Blueprint, render_template, session, g, redirect, url_for
-from app.models import User, Subscription, Payment, Donation # Importar Donation
+from flask import Blueprint, render_template, session, g, redirect, url_for, request
+from app.models import User, Subscription, Payment, Donation
 from app.utils.decorators import login_required, admin_required, subscription_required
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import func
@@ -13,20 +13,20 @@ def localtime_filter(utc_dt):
     """Filtro Jinja para converter um datetime UTC para o fuso local (UTC-3)."""
     if not utc_dt:
         return "-"
+    # Ajustado para usar o fuso horário correto do Brasil (Brasília)
     local_tz = timezone(timedelta(hours=-3))
+    # Garante que a data do banco (naive) seja tratada como UTC antes de converter
     return utc_dt.replace(tzinfo=timezone.utc).astimezone(local_tz)
 
 @main_bp.before_app_request
 def load_logged_in_user():
     """
     Carrega o usuário logado antes de cada requisição.
-    A mudança principal está aqui: garantimos que todo g.user tenha o atributo .role.
     """
     user_id = session.get('user_id')
     g.user = None
     if user_id:
         if user_id == 'admin':
-            # Para o admin, criamos um objeto com a role definida
             from types import SimpleNamespace
             g.user = SimpleNamespace(
                 id='admin', 
@@ -35,18 +35,15 @@ def load_logged_in_user():
                 subscription=SimpleNamespace(status='active', expires_at=None)
             )
         else:
-            # Para o usuário comum, buscamos no DB e adicionamos o atributo role
             user = User.query.get(user_id)
             if user:
-                user.role = 'user' # Adicionando o atributo que faltava dinamicamente
+                user.role = 'user' 
                 g.user = user
 
 @main_bp.app_context_processor
 def inject_user():
     """Torna g.user e as configs de modo gratuito disponíveis para os templates."""
     is_free_mode = os.environ.get('FREE_ACCESS_MODE') == 'true'
-    
-    # Defina aqui a data final da sua promoção
     free_mode_end_date = "27/06/2025" 
     
     return dict(
@@ -75,10 +72,12 @@ def compra_page():
     if os.environ.get('FREE_ACCESS_MODE') == 'true':
         return redirect(url_for('main_bp.dado_page'))
 
-    # Se não estiver no modo gratuito, a lógica que já tínhamos continua:
+    # Se não estiver no modo gratuito, a lógica continua:
     # Se o usuário já tem assinatura ativa, redireciona para o dado
     if g.user and g.user.subscription and g.user.subscription.status == 'active':
-        if g.user.id == 'admin' or (g.user.subscription.expires_at and g.user.subscription.expires_at > datetime.now(timezone.utc)):
+        # --- CORREÇÃO AQUI ---
+        # Compara "naive" com "naive"
+        if g.user.id == 'admin' or (g.user.subscription.expires_at and g.user.subscription.expires_at > datetime.utcnow()):
             return redirect(url_for('main_bp.dado_page'))
             
     return render_template('compra.html')
@@ -98,48 +97,44 @@ def sua_conta_page():
 def admin_page():
     # --- LÓGICA DE CÁLCULO DE RECEITA ---
     
-    # 1. Renda por plano ativo
+    # --- CORREÇÃO AQUI ---
+    # Compara "naive" com "naive"
     active_subs_counts = dict(db.session.query(
         Subscription.plan_type,
         func.count(Subscription.id)
     ).filter(
         Subscription.status == 'active',
-        Subscription.expires_at > datetime.now(timezone.utc)
+        Subscription.expires_at > datetime.utcnow()
     ).group_by(Subscription.plan_type).all())
 
     renda_diaria = active_subs_counts.get('diario', 0) * 1.90
     renda_semanal = active_subs_counts.get('semanal', 0) * 4.90
     renda_mensal = active_subs_counts.get('mensal', 0) * 9.90
 
-    # 2. Receita total de assinaturas
     total_subscription_revenue = db.session.query(func.sum(Payment.amount)).filter(
         Payment.status == 'approved',
-        Payment.plan_type != 'doacao' # Exclui doações
+        Payment.plan_type != 'doacao'
     ).scalar() or 0.0
 
-    # 3. Receita total de doações (agora buscando do novo modelo)
     total_donation_revenue = db.session.query(func.sum(Donation.amount)).scalar() or 0.0
     
     # --- LÓGICA DE PROCESSAMENTO DE USUÁRIOS ---
-    
     users = User.query.order_by(User.created_at.desc()).all()
-    now_utc = datetime.now(timezone.utc)
+    # --- CORREÇÃO AQUI ---
+    now_utc_naive = datetime.utcnow()
     processed_users = []
 
     for user in users:
-        # Lógica correta para verificar se a assinatura está ativa
         subscription = user.subscription
-        is_active = subscription and subscription.status == 'active' and (subscription.expires_at is None or subscription.expires_at > now_utc)
+        is_active = subscription and subscription.status == 'active' and (subscription.expires_at is None or subscription.expires_at > now_utc_naive)
 
-        # Calcula o tempo restante
         tempo_restante_str = "-"
         if is_active and subscription.expires_at:
-            time_left = subscription.expires_at - now_utc
+            time_left = subscription.expires_at - now_utc_naive
             days = time_left.days
             hours = time_left.seconds // 3600
             tempo_restante_str = f"{days}d {hours}h"
 
-        # Calcula o total de dias já comprados
         total_days_purchased = db.session.query(func.sum(Payment.duration_days)).filter_by(
             user_id=user.id, 
             status='approved'
