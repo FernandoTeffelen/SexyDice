@@ -13,6 +13,11 @@
            Painel Admin
         </a>
 
+        <a href="{{ url_for('main_bp.admin_doacoes_page') }}"
+           class="btn {% if request.endpoint == 'main_bp.admin_doacoes_page' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+           Ver Doações
+        </a>
+
         <a href="{{ url_for('main_bp.admin_dado_page') }}" 
            class="btn {% if request.endpoint == 'main_bp.admin_dado_page' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
            Ver Jogo

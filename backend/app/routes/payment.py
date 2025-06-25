@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session
 from app import db
-from app.models import User, Subscription, Payment
+from app.models import User, Subscription, Payment, Donation # Importar o novo modelo Donation
 from app.services.payment_service import PaymentService
 from datetime import datetime, timedelta, timezone
 
@@ -113,11 +113,27 @@ def payment_status(mercado_pago_id):
 def create_donation_pix():
     data = request.get_json()
     amount = data.get('amount')
-    email = data.get('email', 'doacao.anonima@email.com') # Usa um email padrão se não for fornecido
+    email = data.get('email', 'doacao.anonima@email.com')
+    message = data.get('message')
 
     if not amount or float(amount) < 1.00:
         return jsonify({"error": "O valor da doação deve ser de no mínimo R$ 1,00."}), 400
 
+    # Salva a tentativa de doação no banco de dados
+    try:
+        new_donation = Donation(
+            email=email,
+            amount=amount,
+            message=message
+        )
+        db.session.add(new_donation)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"ERRO AO SALVAR DOAÇÃO: {e}")
+        return jsonify({"error": "Erro ao salvar dados da doação."}), 500
+
+    # Continua para gerar o PIX no Mercado Pago
     payment_service = PaymentService()
     result = payment_service.create_donation_pix(
         amount=amount,

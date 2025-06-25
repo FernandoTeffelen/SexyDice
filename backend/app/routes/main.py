@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, render_template, session, g, redirect, url_for
-from app.models import User, Subscription, Payment
+from app.models import User, Subscription, Payment, Donation # Importar Donation
 from app.utils.decorators import login_required, admin_required, subscription_required
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import func
@@ -117,9 +117,8 @@ def admin_page():
         Payment.plan_type != 'doacao' # Exclui doações
     ).scalar() or 0.0
 
-    # 3. Receita total de doações (vamos precisar salvar as doações como um tipo de pagamento para isso funcionar)
-    # Por enquanto, deixaremos como placeholder.
-    total_donation_revenue = 0.0 # Placeholder
+    # 3. Receita total de doações (agora buscando do novo modelo)
+    total_donation_revenue = db.session.query(func.sum(Donation.amount)).scalar() or 0.0
     
     # --- LÓGICA DE PROCESSAMENTO DE USUÁRIOS ---
     
@@ -167,6 +166,12 @@ def admin_page():
 @admin_required
 def admin_dado_page():
     return render_template('admin_dado.html')
+    
+@main_bp.route('/admin/doacoes')
+@admin_required
+def admin_doacoes_page():
+    donations = Donation.query.order_by(Donation.created_at.desc()).all()
+    return render_template('admin_doacoes.html', donations=donations)
 
 @main_bp.route('/doacao')
 def doacao_page():

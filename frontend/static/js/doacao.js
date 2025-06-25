@@ -5,12 +5,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const qrCodeImage = document.getElementById("qrCodeImage");
     const amountInput = document.getElementById("donationAmount");
     const emailInput = document.getElementById("payerEmail");
+    const messageInput = document.getElementById("donationMessage"); // Campo da mensagem
     const errorMessageDiv = document.getElementById('error-message');
 
     if (donateButton) {
         donateButton.addEventListener("click", async () => {
             const amount = parseFloat(amountInput.value);
             const email = emailInput.value || 'doacao@anonima.com'; // Um email padrão se o campo estiver vazio
+            const message = messageInput.value; // Pega o valor da mensagem
 
             if (isNaN(amount) || amount < 1) {
                 errorMessageDiv.textContent = "Por favor, insira um valor de doação de no mínimo R$ 1,00.";
@@ -26,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const response = await fetch('/api/payment/create_donation_pix', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount, email }),
+                    body: JSON.stringify({ amount, email, message }), // Envia a mensagem no corpo da requisição
                 });
 
                 const result = await response.json();

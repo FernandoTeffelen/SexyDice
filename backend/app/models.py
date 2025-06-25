@@ -48,3 +48,13 @@ class Payment(db.Model):
     plan_type = db.Column(db.String(50), nullable=True)
     duration_days = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
+
+class Donation(db.Model):
+    """Modelo da tabela de Doações."""
+    __tablename__ = 'donations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False)
+    amount = db.Column(db.Numeric(10, 2), nullable=False)
+    message = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
