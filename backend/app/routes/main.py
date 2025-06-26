@@ -1,10 +1,10 @@
 import os
 from flask import Blueprint, render_template, session, g, redirect, url_for, request
-from app.models import User, Subscription, Payment, Donation
-from app.utils.decorators import login_required, admin_required, subscription_required
+from ..models import User, Subscription, Payment, Donation
+from ..utils.decorators import login_required, admin_required, subscription_required
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import func
-from app import db
+from .. import db
 
 main_bp = Blueprint('main_bp', __name__)
 
@@ -112,7 +112,8 @@ def admin_page():
         Payment.plan_type != 'doacao'
     ).scalar() or 0.0
 
-    total_donation_revenue = db.session.query(func.sum(Donation.amount)).filter_by(status='approved').scalar() or 0.0
+    # CORREÇÃO APLICADA AQUI: Removido o filtro por 'status' que não existe.
+    total_donation_revenue = db.session.query(func.sum(Donation.amount)).scalar() or 0.0
     
     users = User.query.order_by(User.created_at.desc()).all()
     processed_users = []
@@ -152,16 +153,12 @@ def admin_page():
         total_revenue=total_subscription_revenue,
         donation_revenue=total_donation_revenue
     )
-
-@main_bp.route('/admin/dado')
-@admin_required
-def admin_dado_page():
-    return render_template('admin_dado.html')
     
 @main_bp.route('/admin/doacoes')
 @admin_required
 def admin_doacoes_page():
-    donations = Donation.query.filter_by(status='approved').order_by(Donation.created_at.desc()).all()
+    # CORREÇÃO APLICADA AQUI TAMBÉM: Removido o filtro por 'status'
+    donations = Donation.query.order_by(Donation.created_at.desc()).all()
     return render_template('admin_doacoes.html', donations=donations)
 
 @main_bp.route('/doacao')

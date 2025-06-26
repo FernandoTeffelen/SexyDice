@@ -33,15 +33,23 @@
                 <div class="navbar-nav d-flex align-items-center">
                     {% if current_user %}
                         {% if current_user.role == 'admin' %}
-                            <a href="{{ url_for('main_bp.admin_page') }}" class="btn btn-primary me-2">Painel Admin</a>
+                            <a href="{{ url_for('main_bp.admin_page') }}" class="btn btn-primary me-2">
+                                <i class="bi bi-person-badge me-2"></i>Painel Admin
+                            </a>
                         {% else %}
-                            <a href="{{ url_for('main_bp.sua_conta_page') }}" class="nav-link me-2">Olá, {{ current_user.name }}</a>
+                            <a href="{{ url_for('main_bp.sua_conta_page') }}" class="nav-link me-2">
+                                <i class="bi bi-person-circle me-2"></i>Olá, {{ current_user.name }}
+                            </a>
                         {% endif %}
                         <form action="{{ url_for('auth_bp.logout') }}" method="POST" id="logoutForm">
-                             <button type="submit" class="btn btn-secondary">Sair</button>
+                             <button type="submit" class="btn btn-secondary">
+                                <i class="bi bi-box-arrow-right me-2"></i>Sair
+                             </button>
                         </form>
                     {% else %}
-                        <a href="{{ url_for('main_bp.login_page') }}" class="btn btn-primary">Login / Cadastro</a>
+                        <a href="{{ url_for('main_bp.login_page') }}" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login / Cadastro
+                        </a>
                     {% endif %}
                 </div>
             </div>
@@ -54,29 +62,26 @@
     
     <footer class="site-footer mt-auto py-3">
         <div class="container">
-            <div class="footer-layout-container d-flex align-items-center justify-content-between">
+            <div class="footer-layout-container d-flex flex-column align-items-center">
+                <div class="d-flex align-items-center mb-2">
+                    <ul class="list-inline mb-0 me-4">
+                        <li class="list-inline-item">
+                            <a href="https://www.instagram.com/nandin.csf/" class="social-icon"><i class="bi bi-instagram fs-4"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://www.linkedin.com/in/fernando-teffelen/" class="social-icon"><i class="bi bi-linkedin fs-4"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://github.com/FernandoTeffelen/" class="social-icon"><i class="bi bi-github fs-4"></i></a>
+                        </li>
+                    </ul>
+                    <a href="{{ url_for('main_bp.doacao_page') }}" class="btn btn-sm btn-warning">
+                        <i class="bi bi-heart-fill"></i> Apoie o Projeto
+                    </a>
+                </div>
                 <div>
                     <p class="mb-0 small">SexyDice &copy; Copyright {{ current_year }}. Todos os direitos reservados.</p>
                 </div>
-                <div class="d-flex align-items-center">
-                    <ul class="list-inline mb-0 me-4">
-                        <li class="list-inline-item">
-                            <a href="https://www.instagram.com/nandin.csf/" class="text-white"><i class="bi bi-instagram fs-4"></i></a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="https://www.linkedin.com/in/fernando-teffelen/" class="text-white"><i class="bi bi-linkedin fs-4"></i></a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="https://github.com/FernandoTeffelen/" class="text-white"><i class="bi bi-github fs-4"></i></a>
-                        </li>
-                    </ul>
-                    <div class="d-flex align-items-center">
-                        <a href="{{ url_for('main_bp.doacao_page') }}" class="btn btn-sm btn-warning">
-                            <i class="bi bi-heart-fill"></i> Apoie o Projeto
-                        </a>
-                    </div>
-                </div>
-                
             </div>
         </div>
     </footer>
@@ -85,7 +90,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         {% if current_user %}
         <script>
-            // Script de logout para prevenir o comportamento padrão do formulário
             const logoutForm = document.getElementById('logoutForm');
             if (logoutForm) {
                 logoutForm.addEventListener('submit', async function(e) {

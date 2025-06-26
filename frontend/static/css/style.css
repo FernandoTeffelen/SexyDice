@@ -141,7 +141,7 @@ body {
 /* =================================================================== */
 
 .dice-container {
-    padding: 1.5rem 2rem; /* <-- 'padding' DO TOPO E BASE DIMINUÍDO */
+    padding: 1.5rem 2rem;
     border-radius: 16px;
     width: 100%;
     max-width: 1100px;
@@ -163,9 +163,8 @@ body {
 }
 
 .dice-block {
-    /* Removemos o fundo e a borda para tirar o efeito de "caixa" */
-    flex-basis: calc(33.333% - 2.5rem); /* Aumenta a base dos dados */
-    min-width: 250px; /* Garante que os dados fiquem grandes */
+    flex-basis: calc(33.333% - 2.5rem);
+    min-width: 250px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -201,33 +200,50 @@ body {
 .dice-label {
     margin: 0;
     font-weight: 600;
-    color: var(--text-muted); /* Cor mais sutil para o texto de posições/sugestão */
+    color: var(--text-muted);
     font-size: 1.1rem;
     min-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    text-align: center;
 }
 
-/* Estilos dos Rótulos de Sugestão (cores ajustadas para o tema escuro) */
+/* Estilos dos Rótulos de Sugestão */
 .primeiro { color: #f87171; font-weight: bold; font-size: 1.2em; }
 .segundo { color: #60a5fa; font-weight: bold; font-size: 1.1em; }
 .terceiro { color: #4ade80; font-weight: bold; font-size: 1.0em; }
 .sublinhado { text-decoration: underline; text-decoration-color: var(--primary-color); }
 
-/* Garante que o botão fique centralizado e com margem */
 #rollBtn {
     margin-top: 0.5rem;
 }
 
 /* =================================================================== */
-/* 5. RODAPÉ (FOOTER)                                                  */
+/* 5. RODAPÉ (FOOTER) - CORRIGIDO                                      */
 /* =================================================================== */
 .site-footer {
     background-color: var(--dark-bg-secondary);
     border-top: 1px solid #374151;
-    font-size: 0.9rem;
     color: var(--text-muted);
+    padding: 1.5rem 0;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Permitir quebra de linha no mobile */
+}
+
+.footer-copyright, .footer-social, .footer-support {
+    display: flex;
+    align-items: center;
+}
+
+.footer-social {
+    gap: 1rem; /* Espaçamento entre os ícones */
 }
 
 .social-icon {
@@ -240,20 +256,16 @@ body {
     color: var(--primary-color);
 }
 
-.footer-contact a {
-    text-decoration: none;
-    color: var(--text-muted);
-    transition: color 0.3s ease;
+.footer-support .btn {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    font-weight: 600;
 }
 
-.footer-contact a:hover {
-    color: var(--text-light);
-    text-decoration: underline;
+.footer-support .btn:hover {
+    background-color: #c21a68;
+    border-color: #c21a68;
 }
-
-/* Outros estilos como form-container, admin, etc. podem ser adicionados e adaptados aqui */
-
-
 
 /* =================================================================== */
 /* 6. PAGINA DO ADMIN                                                  */
@@ -272,8 +284,8 @@ body {
     padding: 1.5rem;
     border-radius: 12px;
     border: 1px solid #374151;
-    flex-grow: 1; /* Faz os cards crescerem para ocupar o espaço */
-    min-width: 200px; /* Largura mínima de cada card */
+    flex-grow: 1;
+    min-width: 200px;
 }
 
 .revenue-card h3 {
@@ -290,12 +302,8 @@ body {
     color: var(--primary-color);
 }
 
-.revenue-card .total {
-    color: #4ade80; /* Verde para destaque */
-}
-.revenue-card .donation {
-    color: #ffc107; /* Amarelo para doações */
-}
+.revenue-card .total { color: #4ade80; }
+.revenue-card .donation { color: #ffc107; }
 
 
 /* =================================================================== */
@@ -305,89 +313,80 @@ body {
 @media (max-width: 430px) {
 
     /* --- Ajustes Gerais --- */
-    .main-content {
-        padding: 0.5rem 0.75rem; /* Menos espaçamento nas laterais */
-    }
+    .main-content { padding: 0.5rem 0.75rem; }
 
     /* --- Ajustes da Barra de Navegação --- */
-    .navbar {
-        padding: 0.5rem 1rem;
-    }
-    /* O Bootstrap já cuida do menu "hambúrguer" aqui */
+    .navbar { padding: 0.5rem 1rem; }
 
     /* --- Ajustes da Página Inicial (Home) --- */
-    .hero-section .display-4 {
-        font-size: 2rem; /* Reduz o tamanho do título principal */
-    }
-    
-    .hero-section .lead {
-        font-size: 1rem; /* Reduz o subtítulo */
-    }
-
-    .video-container {
-        max-width: 300px; /* Limita o tamanho do vídeo no mobile */
-    }
-
-    .home-buttons {
-        flex-direction: column; /* Empilha os botões */
-        align-items: center;
-        gap: 1rem;
-    }
+    .hero-section .display-4 { font-size: 2rem; }
+    .hero-section .lead { font-size: 1rem; }
+    .video-container { max-width: 300px; }
+    .home-buttons { flex-direction: column; align-items: center; gap: 1rem; }
 
     /* --- Ajustes da Página de Dados --- */
     .dice-container {
-        padding: 0.1rem 0.1rem;
+       padding: 0.1rem 0.1rem;
+   }
+
+   .dice-row {
+       display: flex;
+       flex-wrap: wrap;
+       justify-content: center; /* Mantenha para centralizar as linhas se não preencherem totalmente */
+       gap: 0.1rem;
+       margin-top: -7%;
+   }
+
+   .dice-block {
+       width: 45%; /* Força uma grade de 2 colunas */
+       min-width: 140px;
+       margin-right: 4%;
+       margin-left: 4%;
+       margin-bottom: 0.5rem; /* Adiciona um pouco de espaço entre as linhas */
+   }
+
+   .dice-block .dice-title {
+       font-size: 1rem;
+       margin-bottom: -10%;
+       margin-top: 7%;
+   }
+
+   .dice-label {
+       font-size: 0.9rem;
+       min-height: 40px;
+       margin-bottom: 7%;
+       margin-top: -10%;
+       line-height: 1.2;
+       padding: 0 4px;
+   }
+
+    /* --- AJUSTES DO RODAPÉ PARA CELULAR --- */
+    .site-footer { padding: 1rem; }
+    .footer-container { gap: 1rem; /* Espaço entre a linha de cima e o copyright */ }
+    
+    .footer-social {
+        order: 1; /* Ícones primeiro */
+        flex-grow: 1; /* Ocupa o espaço disponível à esquerda */
+    }
+    .footer-support {
+        order: 2; /* Botão de apoio em segundo */
+    }
+    .footer-copyright {
+        order: 3; /* Copyright por último */
+        width: 100%; /* Ocupa a largura total */
+        text-align: center; /* Centraliza o texto */
+        font-size: 0.8rem;
     }
 
-    .dice-row {
-        gap: 0.1rem;
-        margin-top: -7%;
-    }
-
-    .dice-block {
-        width: 45%; /* Força uma grade de 2 colunas */
-        min-width: 140px;
-        margin-right: 4%;
-        margin-left: 4%;
-    }
-
-    .dice-block .dice-title {
-        font-size: 1rem;
-        margin-bottom: -10%;
-        margin-top: 7%;
-    }
-
-    .dice-label {
-        font-size: 0.9rem;
-        min-height: 40px;
-        margin-bottom: 7%;
-        margin-top: -10%;
-        line-height: 1.2;
-        padding: 0 4px;
+    .site-footer .small {
+        font-size: 0.77rem; /* Reduz a fonte para o texto de copyright caber em uma linha */
+        white-space: nowrap; /* Força o texto a ficar em uma única linha */
     }
 
     /* --- Ajustes dos Formulários (Login, Compra, Conta, Doação) --- */
-    .form-container {
-        width: 95%;
-        padding: 2rem 1.5rem;
-    }
+    .form-container { width: 95%; padding: 2rem 1.5rem; }
     
     /* --- Ajustes do Painel de Admin --- */
-    .admin-container header .d-flex {
-        flex-direction: column;
-        align-items: center !important;
-        gap: 1rem;
-    }
-
-    .revenue-dashboard {
-        flex-direction: column; /* Empilha os cards de renda */
-        gap: 1rem;
-    }
-}
-
-@media (min-width: 992px) {
-    .hero-section .lead {
-        max-width: 100%;
-        margin-left: 0;
-    }
+    .admin-container header .d-flex { flex-direction: column; align-items: center !important; gap: 1rem; }
+    .revenue-dashboard { flex-direction: column; gap: 1rem; }
 }

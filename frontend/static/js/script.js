@@ -63,22 +63,18 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     rollBtn.addEventListener("click", () => {
-        // --- MUDANÇA 1: Desabilita o botão para prevenir cliques múltiplos ---
         rollBtn.disabled = true;
 
         const promises = activeDiceElements.map(({ dice, min, max }) => {
-            // --- MUDANÇA 2: Lógica de Promise mais robusta com fallback ---
             return new Promise(resolve => {
                 let resolved = false;
 
-                // Função que finaliza a animação e resolve a promise
                 const onFinish = () => {
-                    if (resolved) return; // Garante que será executado apenas uma vez
+                    if (resolved) return;
                     resolved = true;
                     
                     dice.removeEventListener("transitionend", onFinish);
 
-                    // Lógica de sorteio com memória (anti-repetição)
                     const dieId = dice.id;
                     const currentHistory = rollHistory.get(dieId) || [];
                     const diceCount = parseInt(diceCountSelector.value, 10);
@@ -102,14 +98,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     resolve();
                 };
 
-                // Adiciona o listener para o fim da transição
                 dice.addEventListener("transitionend", onFinish);
+                setTimeout(onFinish, 1100);
 
-                // Adiciona um timer de segurança (fallback). Se o evento de transição falhar,
-                // este timer garante que o código continuará após 1.1 segundos.
-                setTimeout(onFinish, 1100); // A animação dura 1s (1000ms)
-
-                // Inicia a animação
                 const x = 360 * (Math.floor(Math.random() * 4) + 1);
                 const y = 360 * (Math.floor(Math.random() * 4) + 1);
                 dice.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
@@ -130,10 +121,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 else if (posicao === 2) destaque = `<span class="terceiro">${numeroOrdinal}</span>`;
                 else destaque = `<span class="sublinhado">${numeroOrdinal}</span>`;
 
-                label.innerHTML = `Sugestão:  ${ destaque }  colocada`;
+                // --- AQUI ESTÁ A CORREÇÃO FINAL E DEFINITIVA ---
+                // Adicionamos style="white-space: nowrap;" para proibir que a linha seja quebrada.
+                label.innerHTML = `Sugestão:<br><span style="white-space: nowrap;">${destaque} colocada</span>`;
             });
         }).finally(() => {
-            // --- MUDANÇA 3: Reabilita o botão no final de tudo, com sucesso ou erro ---
             rollBtn.disabled = false;
         });
     });
