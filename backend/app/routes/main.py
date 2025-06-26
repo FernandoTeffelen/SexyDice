@@ -107,7 +107,7 @@ def admin_page():
         Subscription.expires_at > now_utc
     ).group_by(Subscription.plan_type).all())
 
-    renda_diaria = active_subs_counts.get('diario', 0) * 1.90
+    renda_diaria = active_subs_counts.get('diario', 0) * 2.90
     renda_semanal = active_subs_counts.get('semanal', 0) * 4.90
     renda_mensal = active_subs_counts.get('mensal', 0) * 9.90
 
