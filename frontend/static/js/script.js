@@ -121,9 +121,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 else if (posicao === 2) destaque = `<span class="terceiro">${numeroOrdinal}</span>`;
                 else destaque = `<span class="sublinhado">${numeroOrdinal}</span>`;
 
-                // --- AQUI ESTÁ A CORREÇÃO FINAL E DEFINITIVA ---
-                // Adicionamos style="white-space: nowrap;" para proibir que a linha seja quebrada.
-                label.innerHTML = `Sugestão:<br><span style="white-space: nowrap;">&nbsp;${destaque} colocada</span>`;
+                // CORREÇÃO ROBUSTA APLICADA AQUI
+                label.innerHTML = `<span>Sugestão:</span><span>${destaque} colocada</span>`;
             });
         }).finally(() => {
             rollBtn.disabled = false;
