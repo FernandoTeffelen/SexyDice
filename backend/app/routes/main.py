@@ -13,10 +13,10 @@ def localtime_filter(utc_dt):
     """Filtro Jinja para converter um datetime UTC para o fuso local (UTC-3)."""
     if not utc_dt:
         return "-"
-    # Ajustado para usar o fuso horário correto do Brasil (Brasília)
     local_tz = timezone(timedelta(hours=-3))
-    # Garante que a data do banco (naive) seja tratada como UTC antes de converter
-    return utc_dt.replace(tzinfo=timezone.utc).astimezone(local_tz)
+    if utc_dt.tzinfo is None:
+        utc_dt = utc_dt.replace(tzinfo=timezone.utc)
+    return utc_dt.astimezone(local_tz)
 
 @main_bp.before_app_request
 def load_logged_in_user():
@@ -68,16 +68,14 @@ def cadastro_page():
 @main_bp.route('/compra')
 @login_required
 def compra_page():
-    # Se o modo gratuito estiver ativo, redireciona o usuário direto para o jogo.
     if os.environ.get('FREE_ACCESS_MODE') == 'true':
         return redirect(url_for('main_bp.dado_page'))
 
-    # Se não estiver no modo gratuito, a lógica continua:
-    # Se o usuário já tem assinatura ativa, redireciona para o dado
     if g.user and g.user.subscription and g.user.subscription.status == 'active':
-        # --- CORREÇÃO AQUI ---
-        # Compara "naive" com "naive"
-        if g.user.id == 'admin' or (g.user.subscription.expires_at and g.user.subscription.expires_at > datetime.utcnow()):
+        if g.user.id == 'admin':
+            return redirect(url_for('main_bp.dado_page'))
+        
+        if g.user.subscription.expires_at and g.user.subscription.expires_at > datetime.utcnow():
             return redirect(url_for('main_bp.dado_page'))
             
     return render_template('compra.html')
@@ -95,16 +93,14 @@ def sua_conta_page():
 @main_bp.route('/admin')
 @admin_required
 def admin_page():
-    # --- LÓGICA DE CÁLCULO DE RECEITA ---
+    now_utc = datetime.utcnow()
     
-    # --- CORREÇÃO AQUI ---
-    # Compara "naive" com "naive"
     active_subs_counts = dict(db.session.query(
         Subscription.plan_type,
         func.count(Subscription.id)
     ).filter(
         Subscription.status == 'active',
-        Subscription.expires_at > datetime.utcnow()
+        Subscription.expires_at > now_utc
     ).group_by(Subscription.plan_type).all())
 
     renda_diaria = active_subs_counts.get('diario', 0) * 1.90
@@ -116,21 +112,21 @@ def admin_page():
         Payment.plan_type != 'doacao'
     ).scalar() or 0.0
 
-    total_donation_revenue = db.session.query(func.sum(Donation.amount)).scalar() or 0.0
+    total_donation_revenue = db.session.query(func.sum(Donation.amount)).filter_by(status='approved').scalar() or 0.0
     
-    # --- LÓGICA DE PROCESSAMENTO DE USUÁRIOS ---
     users = User.query.order_by(User.created_at.desc()).all()
-    # --- CORREÇÃO AQUI ---
-    now_utc_naive = datetime.utcnow()
     processed_users = []
 
     for user in users:
         subscription = user.subscription
-        is_active = subscription and subscription.status == 'active' and (subscription.expires_at is None or subscription.expires_at > now_utc_naive)
+        is_active = False
+        if subscription and subscription.status == 'active':
+            if subscription.expires_at is None or subscription.expires_at > now_utc:
+                is_active = True
 
         tempo_restante_str = "-"
         if is_active and subscription.expires_at:
-            time_left = subscription.expires_at - now_utc_naive
+            time_left = subscription.expires_at - now_utc
             days = time_left.days
             hours = time_left.seconds // 3600
             tempo_restante_str = f"{days}d {hours}h"
@@ -165,7 +161,7 @@ def admin_dado_page():
 @main_bp.route('/admin/doacoes')
 @admin_required
 def admin_doacoes_page():
-    donations = Donation.query.order_by(Donation.created_at.desc()).all()
+    donations = Donation.query.filter_by(status='approved').order_by(Donation.created_at.desc()).all()
     return render_template('admin_doacoes.html', donations=donations)
 
 @main_bp.route('/doacao')

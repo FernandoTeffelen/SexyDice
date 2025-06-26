@@ -130,9 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 else if (posicao === 2) destaque = `<span class="terceiro">${numeroOrdinal}</span>`;
                 else destaque = `<span class="sublinhado">${numeroOrdinal}</span>`;
 
-                // --- MUDANÇA AQUI ---
-                // Corrigido para "Sugestão" e garantindo o espaço
-                label.innerHTML = `Sugestão: ${destaque} colocada`;
+                label.innerHTML = `Sugestão:  ${ destaque }  colocada`;
             });
         }).finally(() => {
             // --- MUDANÇA 3: Reabilita o botão no final de tudo, com sucesso ou erro ---
