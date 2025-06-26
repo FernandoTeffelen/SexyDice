@@ -58,3 +58,7 @@ class Donation(db.Model):
     amount = db.Column(db.Numeric(10, 2), nullable=False)
     message = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
+    
+    # CAMPOS NOVOS ADICIONADOS AQUI
+    mercado_pago_id = db.Column(db.BigInteger, unique=True, nullable=True) # Nullable para não quebrar doações antigas
+    status = db.Column(db.String(50), nullable=False, default='pending')
