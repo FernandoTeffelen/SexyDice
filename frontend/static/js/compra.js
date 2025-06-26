@@ -1,155 +1,125 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const payButton = document.getElementById("payButton");
+    const buyButtons = document.querySelectorAll(".buy-btn");
+    const plansArea = document.getElementById("plans-area");
     const paymentArea = document.getElementById("payment-area");
+    const successArea = document.getElementById("success-area"); // <-- Pega a nova área
+    const successPlanMessage = document.getElementById("success-plan-message"); // <-- Pega o parágrafo da mensagem
     const qrCodeImage = document.getElementById("qrCodeImage");
     const pixCodeText = document.getElementById("pixCodeText");
     const copyPixCodeBtn = document.getElementById("copyPixCodeBtn");
-    const planOptions = document.querySelectorAll('input[name="plan"]');
     const errorMessageDiv = document.getElementById('error-message');
-    const planSelectionCard = payButton.closest('.card');
+    const paymentTimerDiv = document.getElementById('payment-timer');
 
     let paymentPollingInterval = null;
     let paymentTimeoutInterval = null;
+    let selectedPlanType = null; // <-- Variável para guardar o plano escolhido
 
-    // Função para parar todos os timers
     const stopAllTimers = () => {
         if (paymentPollingInterval) clearInterval(paymentPollingInterval);
         if (paymentTimeoutInterval) clearInterval(paymentTimeoutInterval);
     };
 
-    // Função para checar o status do pagamento no backend
     const checkPaymentStatus = async (paymentId) => {
         try {
             const response = await fetch(`/api/payment/status/${paymentId}`);
             if (!response.ok) return;
-            
+
             const result = await response.json();
             if (result.status === 'approved') {
-                console.log("Pagamento aprovado! Redirecionando...");
                 stopAllTimers();
-                paymentTimerDiv.className = 'alert alert-success mt-3 text-center fs-5';
-                paymentTimerDiv.innerHTML = '<i class="bi bi-check-circle-fill"></i> Pagamento Aprovado! Redirecionando...';
                 
-                setTimeout(() => {
-                    window.location.href = '/dado';
-                }, 2000);
+                // LÓGICA ATUALIZADA AQUI
+                paymentArea.style.display = 'none'; // Esconde a área de pagamento
+                successArea.style.display = 'block'; // Mostra a área de sucesso
+
+                // Define a mensagem personalizada
+                const messages = {
+                    'diario': 'Aproveite suas 24 horas de acesso!',
+                    'semanal': 'Aproveite sua semana de acesso!',
+                    'mensal': 'Aproveite seu mês de acesso!'
+                };
+                successPlanMessage.textContent = messages[selectedPlanType] || 'Aproveite seu acesso!';
             }
         } catch (error) {
             console.error("Erro ao verificar status do pagamento:", error);
         }
     };
-
-    // Função para iniciar o timer de 10 minutos
-    const startPaymentTimeout = () => {
-        let duration = 600; // 10 minutos em segundos
-        const paymentTimerDiv = document.getElementById('payment-timer');
+    
+    const startPaymentTimeout = (durationInSeconds = 600) => { // 10 minutos
+        let duration = durationInSeconds;
         paymentTimerDiv.style.display = 'block';
         paymentTimerDiv.className = 'alert alert-warning mt-3 text-center fs-5';
 
         paymentTimeoutInterval = setInterval(() => {
             let minutes = parseInt(duration / 60, 10);
             let seconds = parseInt(duration % 60, 10);
-
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
-
             paymentTimerDiv.innerHTML = `<i class="bi bi-clock"></i> Tempo para pagar: ${minutes}:${seconds}`;
 
             if (--duration < 0) {
                 stopAllTimers();
                 paymentArea.style.display = 'none';
-                paymentTimerDiv.style.display = 'none';
-                errorMessageDiv.textContent = "Tempo para pagamento expirado. Por favor, gere um novo PIX.";
+                plansArea.style.display = 'block';
+                errorMessageDiv.textContent = "Tempo para pagamento expirado. Por favor, escolha um plano novamente.";
                 errorMessageDiv.style.display = 'block';
-                planSelectionCard.style.display = 'block';
-                payButton.disabled = false;
-                payButton.innerHTML = '<i class="bi bi-credit-card-fill me-2"></i> Gerar PIX para o Plano Selecionado';
             }
         }, 1000);
     };
 
-    // Função principal para criar o pagamento, com N tentativas
-    const tryCreatePayment = async (attemptsLeft, payload) => {
-        if (attemptsLeft === 0) {
-            errorMessageDiv.textContent = "Não foi possível gerar o QR Code após algumas tentativas. Por favor, tente novamente em um instante.";
-            errorMessageDiv.style.display = 'block';
-            payButton.disabled = false;
-            payButton.innerHTML = '<i class="bi bi-credit-card-fill me-2"></i> Gerar PIX para o Plano Selecionado';
-            return;
-        }
+    buyButtons.forEach(button => {
+        button.addEventListener("click", async () => {
+            const amount = button.dataset.amount;
+            const planType = button.dataset.plan;
+            const durationDays = button.dataset.duration;
 
-        try {
-            const response = await fetch('/api/payment/create_pix', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            const result = await response.json();
+            selectedPlanType = planType; // <-- Salva o tipo do plano escolhido
 
-            if (response.ok && result.success) {
-                qrCodeImage.src = `data:image/png;base64,${result.qr_code_base64}`;
-                pixCodeText.value = result.qr_code_text;
-                paymentArea.style.display = 'block';
-                planSelectionCard.style.display = 'none';
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Gerando...';
 
-                stopAllTimers();
-                paymentPollingInterval = setInterval(() => checkPaymentStatus(result.mercado_pago_id), 3000);
-                startPaymentTimeout();
-            } else {
-                console.warn(`Tentativa falhou, restam ${attemptsLeft - 1}. Erro: ${result.error}`);
-                setTimeout(() => tryCreatePayment(attemptsLeft - 1, payload), 1000);
+            try {
+                const response = await fetch('/api/payment/create_pix', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, planType, durationDays }),
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    qrCodeImage.src = `data:image/png;base64,${result.qr_code_base64}`;
+                    pixCodeText.value = result.qr_code_text;
+                    plansArea.style.display = 'none';
+                    paymentArea.style.display = 'block';
+                    
+                    stopAllTimers();
+                    paymentPollingInterval = setInterval(() => checkPaymentStatus(result.mercado_pago_id), 5000);
+                    startPaymentTimeout();
+                } else {
+                    errorMessageDiv.textContent = `Erro: ${result.error || 'Tente novamente.'}`;
+                    errorMessageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessageDiv.textContent = 'Erro de comunicação. Verifique sua conexão.';
+                errorMessageDiv.style.display = 'block';
+            } finally {
+                button.disabled = false;
+                // Reseta o texto do botão com base no tipo de plano
+                const buttonText = {
+                    'diario': 'Comprar Agora',
+                    'semanal': 'Mais Popular',
+                    'mensal': 'Comprar Agora'
+                };
+                button.innerHTML = buttonText[planType];
             }
-        } catch (error) {
-            console.error('Erro de rede:', error);
-            setTimeout(() => tryCreatePayment(attemptsLeft - 1, payload), 1000);
-        }
-    };
-
-    // Adiciona o listener principal ao botão de pagar
-    if (payButton) {
-        payButton.addEventListener("click", async () => {
-            const selectedPlan = document.querySelector('input[name="plan"]:checked');
-            if (!selectedPlan) {
-                alert('Por favor, selecione um plano.');
-                return;
-            }
-
-            const payload = {
-                amount: parseFloat(selectedPlan.value),
-                planType: selectedPlan.dataset.planType,
-                durationDays: parseInt(selectedPlan.dataset.days, 10)
-            };
-
-            errorMessageDiv.style.display = 'none';
-            payButton.disabled = true;
-            payButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Gerando PIX...';
-            
-            tryCreatePayment(3, payload);
         });
-    }
+    });
 
-    // Adiciona listener para o botão de copiar o código PIX
-    if (copyPixCodeBtn) {
-        copyPixCodeBtn.addEventListener('click', () => {
-            pixCodeText.select();
-            pixCodeText.setSelectionRange(0, 99999);
-            document.execCommand('copy');
-            
-            const originalText = copyPixCodeBtn.innerHTML;
-            copyPixCodeBtn.innerHTML = '<i class="bi bi-check-lg text-success"></i> Copiado!';
-            setTimeout(() => {
-                copyPixCodeBtn.innerHTML = originalText;
-            }, 2000);
-        });
-    }
-
-    // Adiciona listener para a seleção de planos
-    if (planOptions) {
-        planOptions.forEach(radio => {
-            radio.addEventListener('change', () => {
-                planOptions.forEach(opt => opt.closest('.plan-option').classList.remove('active'));
-                radio.closest('.plan-option').classList.add('active');
-            });
-        });
-    }
+    copyPixCodeBtn.addEventListener('click', () => {
+        pixCodeText.select();
+        document.execCommand('copy');
+        const originalText = copyPixCodeBtn.innerHTML;
+        copyPixCodeBtn.innerHTML = '<i class="bi bi-check-lg text-success"></i> Copiado!';
+        setTimeout(() => { copyPixCodeBtn.innerHTML = originalText; }, 2000);
+    });
 });

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Adquirir Acesso Premium{% endblock %}
+{% block title %}Comprar Acesso{% endblock %}
 
 {% block page_styles %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
@@ -9,55 +9,54 @@
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold text-primary">Libere seu Acesso Premium!</h2>
-                {% if current_user %}
-                <p class="lead text-muted">Você está comprando como <strong>{{ current_user.email }}</strong>.</p>
-                {% endif %}
-            </div>
+        <div class="col-md-10 col-lg-8">
 
-            <div class="card shadow-lg border-0 mb-4">
-                <div class="card-body p-4">
-                    <h4 class="card-title text-center mb-4">Selecione seu Plano</h4>
-                    
-                    <div class="mb-4">
-                        <label class="form-label fw-bold"><i class="bi bi-calendar-check me-2"></i>Escolha a Duração do Acesso:</label>
-                        <div class="list-group">
-                            <label class="list-group-item d-flex justify-content-between align-items-center py-3 plan-option active">
-                                <input class="form-check-input me-3" type="radio" name="plan" id="plan1Day" value="1.90" data-days="1" data-plan-type="diario" checked>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">Acesso Diário</h6>
-                                    <small class="text-muted">Aproveite por 24 horas.</small>
-                                </div>
-                                <span class="badge bg-primary rounded-pill fs-6">R$ 1,90</span>
-                            </label>
-                            <label class="list-group-item d-flex justify-content-between align-items-center py-3 plan-option">
-                                <input class="form-check-input me-3" type="radio" name="plan" id="plan7Days" value="4.90" data-days="7" data-plan-type="semanal">
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">Acesso Semanal</h6>
-                                    <small class="text-muted">7 dias de diversão contínua.</small>
-                                </div>
-                                <span class="badge bg-success rounded-pill fs-6">R$ 4,90</span>
-                            </label>
-                            <label class="list-group-item d-flex justify-content-between align-items-center py-3 plan-option">
-                                <input class="form-check-input me-3" type="radio" name="plan" id="plan30Days" value="9.90" data-days="30" data-plan-type="mensal">
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">Acesso Mensal</h6>
-                                    <small class="text-muted">30 dias de acesso ilimitado.</small>
-                                </div>
-                                <span class="badge bg-info rounded-pill fs-6">R$ 9,90</span>
-                            </label>
+            <div id="plans-area" class="text-center">
+                <h2 class="fw-bold text-primary mb-3">Escolha seu Plano de Acesso</h2>
+                <p class="lead text-muted mb-5">Acesso ilimitado a todas as funcionalidades durante o período do seu plano.</p>
+
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-lg border-0 plan-option">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="my-0 fw-normal">Diário</h4>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h3 class="card-title pricing-card-title">R$1,90<small class="text-muted fw-light">/dia</small></h3>
+                                <p class="mt-3 mb-4 flex-grow-1">Perfeito para uma noite de diversão sem compromisso.</p>
+                                <button type="button" class="btn btn-lg btn-outline-primary buy-btn" data-plan="diario" data-amount="1.90" data-duration="1">Comprar Agora</button>
+                            </div>
                         </div>
                     </div>
-                    
-                    <button id="payButton" class="btn btn-primary btn-lg w-100 py-3 mt-3">
-                        <i class="bi bi-credit-card-fill me-2"></i> Gerar PIX para o Plano Selecionado
-                    </button>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-lg border-primary plan-option">
+                             <div class="card-header bg-primary text-white">
+                                <h4 class="my-0 fw-normal">Semanal</h4>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h3 class="card-title pricing-card-title">R$4,90<small class="text-muted fw-light">/semana</small></h3>
+                                <p class="mt-3 mb-4 flex-grow-1">Uma semana inteira de novas experiências para apimentar a relação.</p>
+                                <button type="button" class="btn btn-lg btn-primary buy-btn" data-plan="semanal" data-amount="4.90" data-duration="7">Mais Popular</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-lg border-0 plan-option">
+                            <div class="card-header bg-primary text-white">
+                                <h4 class="my-0 fw-normal">Mensal</h4>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h3 class="card-title pricing-card-title">R$9,90<small class="text-muted fw-light">/mês</small></h3>
+                                <p class="mt-3 mb-4 flex-grow-1">O melhor custo-benefício para um mês inteiro de descobertas.</p>
+                                <button type="button" class="btn btn-lg btn-outline-primary buy-btn" data-plan="mensal" data-amount="9.90" data-duration="30">Comprar Agora</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div id="error-message" class="alert alert-danger mt-3 text-center" style="display: none;"></div>
             </div>
 
-            <div id="payment-area" class="card shadow-lg border-0 p-4 mt-5 text-center" style="display: none;">
+            <div id="payment-area" class="card shadow-lg border-0 p-4 mt-4 text-center" style="display: none;">
                 <div id="payment-timer" class="alert alert-warning mt-3 text-center fs-5" style="display: none;"></div>
                 <h4 class="text-primary mb-3"><i class="bi bi-qr-code me-2"></i> Escaneie ou Copie para Pagar</h4>
                 <p class="text-muted mb-4">Seu acesso será liberado automaticamente após a confirmação do pagamento.</p>
@@ -72,7 +71,7 @@
                             <i class="bi bi-clipboard"></i> Copiar
                         </button>
                     </div>
-                    <small class="form-text text-muted">Copie este código e cole no aplicativo do seu banco na opção PIX Copia e Cola.</small>
+                    <small class="form-text text-muted">Copie este código e cole no aplicativo do seu banco.</small>
                 </div>
 
                 <p class="fw-bold text-success"><i class="bi bi-check-circle me-2"></i> Aguardando Confirmação do Pagamento...</p>
@@ -80,9 +79,15 @@
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            <div id="error-message" class="alert alert-danger mt-3 text-center" style="display: none;">
-                Não foi possível gerar o QR Code. Por favor, tente novamente.
+
+            <div id="success-area" class="card shadow-lg border-0 p-4 mt-4 text-center" style="display: none;">
+                <h3 class="text-success mb-3"><i class="bi bi-patch-check-fill me-2"></i>Pagamento Aprovado!</h3>
+                <p class="lead" id="success-plan-message">Aproveite seu acesso!</p>
+                <a href="{{ url_for('main_bp.dado_page') }}" class="btn btn-primary btn-lg mt-3">
+                    <i class="bi bi-dice-5-fill me-2"></i>Ir para o Jogo
+                </a>
             </div>
+
         </div>
     </div>
 </div>

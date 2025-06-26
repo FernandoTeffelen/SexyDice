@@ -56,7 +56,7 @@ class PaymentService:
                 }
             else:
                 current_app.logger.error(f"Erro PIX: {payment_response}")
-                return {"success": False, "error": payment_response.get("message", "Erro desconhecido.")}
+                return {"success": False, "error": payment_response.get("message", "Email invalido, por favor, tente com outro.")}
 
         except Exception as e:
             current_app.logger.error(f"Exceção ao criar PIX: {e}", exc_info=True)

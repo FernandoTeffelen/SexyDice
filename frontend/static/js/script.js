@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // --- AQUI ESTÁ A CORREÇÃO FINAL E DEFINITIVA ---
                 // Adicionamos style="white-space: nowrap;" para proibir que a linha seja quebrada.
-                label.innerHTML = `Sugestão:<br><span style="white-space: nowrap;">${destaque} colocada</span>`;
+                label.innerHTML = `Sugestão:<br><span style="white-space: nowrap;">&nbsp;${destaque} colocada</span>`;
             });
         }).finally(() => {
             rollBtn.disabled = false;
