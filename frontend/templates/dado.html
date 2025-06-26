@@ -2,6 +2,10 @@
 
 {% block title %}O Jogo{% endblock %}
 
+{% block page_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dado.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="dice-container container">
     {% if is_free_mode %}

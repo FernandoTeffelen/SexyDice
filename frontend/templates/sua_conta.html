@@ -2,6 +2,10 @@
 
 {% block title %}Sua Conta{% endblock %}
 
+{% block page_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="form-container">
     {% with messages = get_flashed_messages(with_categories=true) %}

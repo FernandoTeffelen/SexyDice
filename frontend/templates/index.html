@@ -2,6 +2,10 @@
 
 {% block title %}SexyDice{% endblock %}
 
+{% block page_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="container hero-section">
     <div class="row align-items-center">

@@ -2,6 +2,10 @@
 
 {% block title %}Crie sua Conta{% endblock %}
 
+{% block page_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/formulario.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="form-container">
     <h2>Crie sua Conta</h2>

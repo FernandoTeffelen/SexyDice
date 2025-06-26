@@ -27,14 +27,6 @@ body {
     justify-content: center;
 }
 
-.plan-option .form-check-input {
-    display: none;
-}
-
-.icons-links-me {
-    margin-right: 12.5%;
-}
-
 /* =================================================================== */
 /* 2. BARRA DE NAVEGAÇÃO (NAVBAR)                                      */
 /* =================================================================== */
@@ -69,181 +61,15 @@ body {
     border-color: #6d28d9;
 }
 
-/* =================================================================== */
-/* 3. PÁGINA INICIAL (HOME - HERO SECTION)                             */
-/* =================================================================== */
-.hero-section {
-    padding: 4rem 0;
-}
-
-.hero-section .display-4 {
-    color: var(--text-light);
-}
-
-.hero-section .lead {
-    color: var(--text-muted);
-    max-width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.video-container {
-    position: relative;
-    max-width: 350px;
-    margin: 0 auto;
-    border-radius: 24px;
-    border: 2px solid #374151;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-}
-
-#promoVideo {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.replay-icon {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    font-size: 4rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    cursor: pointer;
-}
-
-.replay-icon[style*="display: flex"] {
-    opacity: 1;
-}
-
-/* --- Estilo para o Banner de Modo Gratuito --- */
-.free-mode-banner {
-    width: 90%;
-    max-width: 800px;
-    margin: 1.5rem auto;
-    padding: 1rem 1.5rem;
-    border: 1px solid #badbcc; /* Borda verde clara (Bootstrap success) */
-    background-color: #d1e7dd; /* Fundo verde claro (Bootstrap success) */
-    color: #0f5132; /* Texto verde escuro (Bootstrap success) */
-    border-radius: 8px;
-    text-align: center;
-    font-size: 1rem;
-    font-weight: 500;
-}
 
 /* =================================================================== */
-/* 4. PÁGINA DO JOGO (DADOS)                                           */
-/* =================================================================== */
-
-.dice-container {
-    padding: 1.5rem 2rem;
-    border-radius: 16px;
-    width: 100%;
-    max-width: 1100px;
-    text-align: center;
-}
-
-.dice-selector-container {
-    max-width: 350px;
-    margin: 0 auto 3rem auto;
-    text-align: left;
-}
-
-.dice-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 1rem;
-}
-
-.dice-block {
-    flex-basis: calc(33.333% - 2.5rem);
-    min-width: 250px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0;
-}
-
-.dice-block .dice-title {
-    font-size: 1.25rem;
-    color: var(--text-light);
-    font-weight: 600;
-    margin-bottom: 0.1rem;
-}
-
-.dice {
-    width: 100%;
-    max-width: 220px;
-    aspect-ratio: 1 / 1;
-    transition: transform 1s ease;
-    transform-style: preserve-3d;
-    margin-bottom: 0.1rem;
-}
-
-.dice img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 16px;
-    user-select: none;
-    pointer-events: none;
-}
-
-.dice-label {
-    margin: 0;
-    font-weight: 600;
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-}
-
-/* Estilos dos Rótulos de Sugestão */
-.primeiro { color: #f87171; font-weight: bold; font-size: 1.2em; }
-.segundo { color: #60a5fa; font-weight: bold; font-size: 1.1em; }
-.terceiro { color: #4ade80; font-weight: bold; font-size: 1.0em; }
-.sublinhado { text-decoration: underline; text-decoration-color: var(--primary-color); }
-
-#rollBtn {
-    margin-top: 0.5rem;
-}
-
-/* =================================================================== */
-/* 5. RODAPÉ (FOOTER) - CORRIGIDO                                      */
+/* 5. RODAPÉ (FOOTER)                                                  */
 /* =================================================================== */
 .site-footer {
     background-color: var(--dark-bg-secondary);
     border-top: 1px solid #374151;
+    font-size: 0.9rem;
     color: var(--text-muted);
-    padding: 1.5rem 0;
-}
-
-.footer-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap; /* Permitir quebra de linha no mobile */
-}
-
-.footer-copyright, .footer-social, .footer-support {
-    display: flex;
-    align-items: center;
-}
-
-.footer-social {
-    gap: 1rem; /* Espaçamento entre os ícones */
 }
 
 .social-icon {
@@ -256,161 +82,35 @@ body {
     color: var(--primary-color);
 }
 
-.footer-support .btn {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
-    font-weight: 600;
-}
-
-.footer-support .btn:hover {
-    background-color: #c21a68;
-    border-color: #c21a68;
-}
-
-/* =================================================================== */
-/* 6. PAGINA DO ADMIN                                                  */
-/* =================================================================== */
-.revenue-dashboard {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
-    text-align: center;
-}
-
-.revenue-card {
-    background-color: var(--dark-bg-secondary);
-    padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid #374151;
-    flex-grow: 1;
-    min-width: 200px;
-}
-
-.revenue-card h3 {
-    margin-top: 0;
-    margin-bottom: 0.75rem;
+.footer-contact a {
+    text-decoration: none;
     color: var(--text-muted);
-    font-size: 1rem;
-    font-weight: 600;
+    transition: color 0.3s ease;
 }
 
-.revenue-card .amount {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--primary-color);
+.footer-contact a:hover {
+    color: var(--text-light);
+    text-decoration: underline;
 }
 
-.revenue-card .total { color: #4ade80; }
-.revenue-card .donation { color: #ffc107; }
-
-
 /* =================================================================== */
-/* 7. MEDIA QUERY (ESTILOS PARA CELULAR - 430px)                       */
+/* 7. MEDIA QUERIES GLOBAIS (ESTILOS PARA CELULAR - 430px)             */
 /* =================================================================== */
-
 @media (max-width: 430px) {
 
     /* --- Ajustes Gerais --- */
-    .main-content { padding: 0.5rem 0.75rem; }
+    .main-content {
+        padding: 0.5rem 0.75rem;
+    }
 
     /* --- Ajustes da Barra de Navegação --- */
-    .navbar { padding: 0.5rem 1rem; }
-
-    /* --- Ajustes da Página Inicial (Home) --- */
-    .hero-section .display-4 { font-size: 2rem; }
-    .hero-section .lead { font-size: 1rem; }
-    .video-container { max-width: 300px; }
-    .home-buttons { flex-direction: column; align-items: center; gap: 1rem; }
-
-    /* --- Ajustes da Página de Dados --- */
-    .dice-container {
-       padding: 0.1rem 0.1rem;
-   }
-
-   .dice-row {
-       display: flex;
-       flex-wrap: wrap;
-       justify-content: center; /* Mantenha para centralizar as linhas se não preencherem totalmente */
-       gap: 0.1rem;
-       margin-top: -7%;
-   }
-
-   .dice-block {
-       width: 45%; /* Força uma grade de 2 colunas */
-       min-width: 140px;
-       margin-right: 4%;
-       margin-left: 4%;
-       margin-bottom: 0.5rem; /* Adiciona um pouco de espaço entre as linhas */
-   }
-
-   .dice-block .dice-title {
-       font-size: 1rem;
-       margin-bottom: -10%;
-       margin-top: 7%;
-   }
-
-   .dice-label {
-       font-size: 0.9rem;
-       min-height: 40px;
-       margin-bottom: 7%;
-       margin-top: -10%;
-       line-height: 1.2;
-       padding: 0 4px;
-   }
-
-    /* --- AJUSTES DO RODAPÉ PARA CELULAR --- */
-    .site-footer { padding: 1rem; }
-    .footer-container { gap: 1rem; /* Espaço entre a linha de cima e o copyright */ }
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
     
-    .footer-social {
-        order: 1; /* Ícones primeiro */
-        flex-grow: 1; /* Ocupa o espaço disponível à esquerda */
-    }
-    .footer-support {
-        order: 2; /* Botão de apoio em segundo */
-    }
-    .footer-copyright {
-        order: 3; /* Copyright por último */
-        width: 100%; /* Ocupa a largura total */
-        text-align: center; /* Centraliza o texto */
-        font-size: 0.8rem;
-    }
-
+    /* --- Ajustes do Rodapé --- */
     .site-footer .small {
-        font-size: 0.77rem; /* Reduz a fonte para o texto de copyright caber em uma linha */
-        white-space: nowrap; /* Força o texto a ficar em uma única linha */
-    }
-
-    /* --- Ajustes dos Formulários (Login, Compra, Conta, Doação) --- */
-    .form-container { width: 95%; padding: 2rem 1.5rem; }
-    
-    /* --- Ajustes do Painel de Admin --- */
-    .admin-container header .d-flex {
-        flex-direction: column;
-        align-items: center !important;
-        gap: 1rem;
-    }
-
-    .revenue-dashboard {
-        flex-direction: row; /* Alinha em linha para permitir a quebra */
-        justify-content: center;
-        gap: 0.75rem; /* Diminui o espaço entre os cards */
-    }
-
-    .revenue-card {
-        flex-grow: 0; /* Impede que os cards cresçam para preencher o espaço */
-        flex-basis: calc(50% - 0.5rem); /* Define a base para 2 colunas */
-        min-width: 0; /* Reseta a largura mínima do desktop */
-        padding: 0.75rem; /* Diminui o espaçamento interno */
-    }
-
-    .revenue-card h3 {
-        font-size: 0.75rem; /* Diminui a fonte do título */
-    }
-
-    .revenue-card .amount {
-        font-size: 1.4rem; /* Diminui a fonte do valor */
+        font-size: 0.77rem;
+        white-space: nowrap;
     }
 }

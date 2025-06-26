@@ -1,0 +1,65 @@
+/* Estilos da Página do Admin */
+.revenue-dashboard {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.revenue-card {
+    background-color: var(--dark-bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #374151;
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.revenue-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.revenue-card .amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.revenue-card .total {
+    color: #4ade80;
+}
+.revenue-card .donation {
+    color: #ffc107;
+}
+
+@media (max-width: 430px) {
+    /* Ajustes do Painel de Admin */
+    .admin-container header .d-flex {
+        flex-direction: column;
+        align-items: center !important;
+        gap: 1rem;
+    }
+    .revenue-dashboard {
+        flex-direction: row;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    .revenue-card {
+        flex-grow: 0;
+        flex-basis: calc(50% - 0.5rem);
+        min-width: 0;
+        padding: 0.75rem;
+    }
+    .revenue-card h3 {
+        font-size: 0.75rem;
+    }
+    .revenue-card .amount {
+        font-size: 1.4rem;
+    }
+}
