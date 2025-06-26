@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const donateButton = document.getElementById("donateButton");
     const donationFormArea = document.getElementById("donation-form-area");
     const paymentArea = document.getElementById("payment-area");
+    const successArea = document.getElementById("success-area"); // <-- Pega a nova área
     const qrCodeImage = document.getElementById("qrCodeImage");
     const pixCodeText = document.getElementById("pixCodeText");
     const copyPixCodeBtn = document.getElementById("copyPixCodeBtn");
@@ -27,9 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await response.json();
             if (result.status === 'approved') {
                 stopAllTimers();
-                paymentTimerDiv.className = 'alert alert-success mt-3 text-center fs-5';
-                paymentTimerDiv.innerHTML = '<i class="bi bi-check-circle-fill"></i> Doação recebida! Muito obrigado!';
-                // Não redireciona, apenas mostra a mensagem de sucesso.
+                
+                // LÓGICA ATUALIZADA AQUI
+                paymentArea.style.display = 'none'; // Esconde a área de pagamento
+                successArea.style.display = 'block'; // Mostra a área de sucesso
             }
         } catch (error) {
             console.error("Erro ao verificar status da doação:", error);
@@ -92,8 +94,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     paymentArea.style.display = 'block';
 
                     stopAllTimers();
-                    paymentPollingInterval = setInterval(() => checkPaymentStatus(result.mercado_pago_id), 5000); // Verifica a cada 5s
-                    startPaymentTimeout(600); // Timer de 10 minutos
+                    paymentPollingInterval = setInterval(() => checkPaymentStatus(result.mercado_pago_id), 5000);
+                    startPaymentTimeout(600);
                 } else {
                     errorMessageDiv.textContent = `Erro: ${result.error || 'Tente novamente.'}`;
                     errorMessageDiv.style.display = 'block';

@@ -112,8 +112,7 @@ def admin_page():
         Payment.plan_type != 'doacao'
     ).scalar() or 0.0
 
-    # CORREÇÃO APLICADA AQUI: Removido o filtro por 'status' que não existe.
-    total_donation_revenue = db.session.query(func.sum(Donation.amount)).scalar() or 0.0
+    total_donation_revenue = db.session.query(func.sum(Donation.amount)).filter(Donation.status == 'approved').scalar() or 0.0
     
     users = User.query.order_by(User.created_at.desc()).all()
     processed_users = []
@@ -157,8 +156,8 @@ def admin_page():
 @main_bp.route('/admin/doacoes')
 @admin_required
 def admin_doacoes_page():
-    # CORREÇÃO APLICADA AQUI TAMBÉM: Removido o filtro por 'status'
-    donations = Donation.query.order_by(Donation.created_at.desc()).all()
+    # CORREÇÃO APLICADA AQUI: Adicionado o filtro por status='approved'
+    donations = Donation.query.filter_by(status='approved').order_by(Donation.created_at.desc()).all()
     return render_template('admin_doacoes.html', donations=donations)
 
 @main_bp.route('/doacao')
