@@ -54,13 +54,14 @@
                         <td>{{ data.user.email }}</td>
                         <td>{{ data.user.created_at.strftime('%d/%m/%Y') }}</td>
                         <td>
-                            {% if data.is_active %}
-                                <span class="badge bg-success">Ativado</span>
-                            {% else %}
-                                <span class="badge bg-danger">Desativado</span>
-                            {% endif %}
+                            <span id="status-{{ data.user.id }}" class="badge {% if data.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if data.is_active %}Ativado{% else %}Desativado{% endif %}
+                            </span>
                         </td>
-                        <td>{{ data.tempo_restante }}</td>
+                        <td id="timer-{{ data.user.id }}" 
+                            data-expires-at="{% if data.is_active and data.user.subscription.expires_at %}{{ data.user.subscription.expires_at.isoformat() }}{% endif %}">
+                            {{ data.tempo_restante }}
+                        </td>
                         <td>{{ data.dias_totais }} dias</td>
                         <td>
                             {% if data.user.subscription and data.user.subscription.plan_type %}
@@ -79,4 +80,13 @@
             </table>
         </div>
     </div>
+{% endblock %}
+
+{% block page_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/admin_contador.js') }}"></script>
 {% endblock %}

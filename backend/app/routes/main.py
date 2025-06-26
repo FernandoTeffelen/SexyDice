@@ -75,7 +75,11 @@ def compra_page():
         if g.user.id == 'admin':
             return redirect(url_for('main_bp.dado_page'))
         
-        if g.user.subscription.expires_at and g.user.subscription.expires_at > datetime.utcnow():
+        expires_at_aware = g.user.subscription.expires_at
+        if expires_at_aware and expires_at_aware.tzinfo is None:
+            expires_at_aware = expires_at_aware.replace(tzinfo=timezone.utc)
+
+        if expires_at_aware and expires_at_aware > datetime.now(timezone.utc):
             return redirect(url_for('main_bp.dado_page'))
             
     return render_template('compra.html')
@@ -93,7 +97,7 @@ def sua_conta_page():
 @main_bp.route('/admin')
 @admin_required
 def admin_page():
-    now_utc = datetime.utcnow()
+    now_utc = datetime.now(timezone.utc)
     
     active_subs_counts = dict(db.session.query(
         Subscription.plan_type,
@@ -120,13 +124,25 @@ def admin_page():
     for user in users:
         subscription = user.subscription
         is_active = False
+        
+        # CORREÇÃO APLICADA AQUI
         if subscription and subscription.status == 'active':
-            if subscription.expires_at is None or subscription.expires_at > now_utc:
+            # Garante que a data de expiração seja "aware" antes de comparar
+            expires_at_aware = subscription.expires_at
+            if expires_at_aware and expires_at_aware.tzinfo is None:
+                expires_at_aware = expires_at_aware.replace(tzinfo=timezone.utc)
+
+            if expires_at_aware is None or expires_at_aware > now_utc:
                 is_active = True
 
         tempo_restante_str = "-"
         if is_active and subscription.expires_at:
-            time_left = subscription.expires_at - now_utc
+            # Garante que a data de expiração seja "aware" antes do cálculo
+            expires_at_aware = subscription.expires_at
+            if expires_at_aware.tzinfo is None:
+                expires_at_aware = expires_at_aware.replace(tzinfo=timezone.utc)
+            
+            time_left = expires_at_aware - now_utc
             days = time_left.days
             hours = time_left.seconds // 3600
             tempo_restante_str = f"{days}d {hours}h"
@@ -156,7 +172,6 @@ def admin_page():
 @main_bp.route('/admin/doacoes')
 @admin_required
 def admin_doacoes_page():
-    # CORREÇÃO APLICADA AQUI: Adicionado o filtro por status='approved'
     donations = Donation.query.filter_by(status='approved').order_by(Donation.created_at.desc()).all()
     return render_template('admin_doacoes.html', donations=donations)
 
