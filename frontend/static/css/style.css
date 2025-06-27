@@ -27,6 +27,20 @@ body {
     justify-content: center;
 }
 
+.free-mode-banner {
+    width: 90%;
+    max-width: 800px;
+    margin: 1.5rem auto;
+    padding: 1rem 1.5rem;
+    border: 1px solid #badbcc;
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
 /* =================================================================== */
 /* 2. BARRA DE NAVEGAÇÃO (NAVBAR)                                      */
 /* =================================================================== */
