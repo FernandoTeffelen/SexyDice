@@ -2,15 +2,17 @@
 
 {% block title %}O Jogo{% endblock %}
 
+{% block page_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dado.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="dice-container container">
-    
     {% if is_free_mode %}
     <div class="free-mode-banner">
         O período de teste gratuito termina em <strong>{{ free_mode_end_date }}</strong>. Aproveite!
     </div>
     {% endif %}
-
     <div class="dice-selector-container mb-4">
         <label for="diceCountSelector" class="form-label">Quantos dados deseja girar?</label>
         <select class="form-select" id="diceCountSelector">
