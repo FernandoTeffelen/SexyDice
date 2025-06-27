@@ -85,9 +85,48 @@ def compra_page():
     return render_template('compra.html')
 
 @main_bp.route('/dado')
-@subscription_required
+# O decorador @subscription_required foi removido daqui
 def dado_page():
-    return render_template('dado.html')
+    """
+    Renderiza a página do dado.
+    Se o modo gratuito estiver ativo, permite o acesso a todos.
+    Caso contrário, exige uma assinatura ativa.
+    """
+    # Verifica se o modo gratuito está ativo
+    is_free_mode = os.environ.get('FREE_ACCESS_MODE') == 'true'
+
+    # Se estiver em modo gratuito, libera o acesso para qualquer um
+    if is_free_mode:
+        return render_template('dado.html')
+
+    # --- Se o modo gratuito NÃO estiver ativo, a lógica de assinatura é aplicada ---
+
+    # 1. Verifica se o usuário está logado. Se não, redireciona para a página de login.
+    if not g.user:
+        return redirect(url_for('main_bp.login_page'))
+
+    # 2. Verifica se o usuário tem uma assinatura ativa.
+    is_subscribed = False
+    # O usuário 'admin' sempre tem acesso
+    if g.user.id == 'admin':
+        is_subscribed = True
+    elif hasattr(g.user, 'subscription') and g.user.subscription and g.user.subscription.status == 'active':
+        expires_at_aware = g.user.subscription.expires_at
+        if expires_at_aware:
+            # Garante que a data de expiração tenha fuso horário para a comparação
+            if expires_at_aware.tzinfo is None:
+                expires_at_aware = expires_at_aware.replace(tzinfo=timezone.utc)
+            
+            # Compara com a data e hora atuais (com fuso horário)
+            if expires_at_aware > datetime.now(timezone.utc):
+                is_subscribed = True
+    
+    # 3. Se estiver inscrito, mostra a página. Caso contrário, redireciona para a página de compra.
+    if is_subscribed:
+        return render_template('dado.html')
+    else:
+        return redirect(url_for('main_bp.compra_page'))
+
 
 @main_bp.route('/sua_conta')
 @login_required
