@@ -4,6 +4,7 @@ divulgação.txt
 dia-a-dia.txt
 sql.txt
 alterar_preços.txt
+backend/delete_users.py
 backend/venv/
 backend/.env
 
